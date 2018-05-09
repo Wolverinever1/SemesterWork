@@ -26,8 +26,6 @@ public class Main extends Application {
 //			wp.setEquipment_id(e);
 //			wp.setMachineNo(1);
 //			session.save(wp);
-//			session.getTransaction().commit();
-			
 //			Customer cust = new Customer(0, "Олена", new char[] {'1','2','3'}, "вулиця Щорсе 117"); 
 //			Order o = new Order(0, new Date(0), cust);
 //			OrderDAO.Add(o);
@@ -39,8 +37,6 @@ public class Main extends Application {
 //			Worker w = new Worker(0, "Ставіп", "роогоргн", "оавіглпшгк", 3, null,null);
 //			session.save(w);
 //			EquipmentDAO.getWorkplaces(w);
-			
-//			session.createQuery("select workplaces from Equipment").list();s;
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
