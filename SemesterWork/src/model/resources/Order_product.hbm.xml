@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping">
+<hibernate-mapping package="model">
+	<class name="Order_product" table="order_product">
+	<primary-key-join-column name ="order_id"/>
+	<!-- <composite-id>
+      <key-property name="order" column="order_id" />
+      <key-property name="product" column="model" />
+    </composite-id> -->
+    
+		<property name="count" column="count" />
+		<many-to-one name="order" class="model.Order" column="order_id" insert="false" update="false"/>
+		<many-to-one name="product" class="model.Product" column="model" insert="false" update="false"/>
+	</class>
+</hibernate-mapping>

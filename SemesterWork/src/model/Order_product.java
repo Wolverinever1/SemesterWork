@@ -1,0 +1,106 @@
+package model;
+
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.persistence.*;
+
+import model.id.OrderProductId;
+
+@Entity
+@Table(name = "order_product")
+@AssociationOverrides({ @AssociationOverride(name = "primaryKey.order", joinColumns = @JoinColumn(name = "order_id")),
+		@AssociationOverride(name = "primaryKey.product", joinColumns = @JoinColumn(name = "model")) })
+public class Order_product implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private int count;
+	@EmbeddedId
+	private OrderProductId primaryKey = new OrderProductId();
+	@OneToMany
+	@JoinColumns(value= {@JoinColumn(name="order_id"), @JoinColumn(name="model")})
+	private Set<Done_work> doneWork = new HashSet<>();
+
+	public OrderProductId getPrimaryKey() {
+		return primaryKey;
+	}
+
+	public void setPrimaryKey(OrderProductId primaryKey) {
+		this.primaryKey = primaryKey;
+	}
+
+	@Transient
+	public Order getOrder() {
+		return getPrimaryKey().getOrder();
+	}
+
+	public void setOrder(Order order) {
+		getPrimaryKey().setOrder(order);
+	}
+
+	@Transient
+	public Product getProduct() {
+		return getPrimaryKey().getProduct();
+	}
+
+	public void setProduct(Product product) {
+		getPrimaryKey().setProduct(product);
+	}
+
+	public Order_product() {
+		// TODO Auto-generated constructor stub
+	}
+
+	public int getCount() {
+		return count;
+	}
+
+	public void setCount(int count) {
+		this.count = count;
+	}
+
+	public Set<Done_work> getDoneWork() {
+		return doneWork;
+	}
+
+	public void setDoneWork(Set<Done_work> doneWork) {
+		this.doneWork = doneWork;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + count;
+		result = prime * result + ((doneWork == null) ? 0 : doneWork.hashCode());
+		result = prime * result + ((primaryKey == null) ? 0 : primaryKey.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Order_product other = (Order_product) obj;
+		if (count != other.count)
+			return false;
+		if (doneWork == null) {
+			if (other.doneWork != null)
+				return false;
+		} else if (!doneWork.equals(other.doneWork))
+			return false;
+		if (primaryKey == null) {
+			if (other.primaryKey != null)
+				return false;
+		} else if (!primaryKey.equals(other.primaryKey))
+			return false;
+		return true;
+	}
+}
