@@ -18,25 +18,6 @@ public class Main extends Application {
 			scene.getStylesheets().add(getClass().getResource("/view/application.css").toExternalForm());
 			primaryStage.setScene(scene);
 			primaryStage.show();
-//			Equipment e = new Equipment();
-//			e.setId(409);
-//			e.setDescription("general  machine");
-//			session.save(e);
-//			Workplace wp = new Workplace();
-//			wp.setEquipment_id(e);
-//			wp.setMachineNo(1);
-//			session.save(wp);
-//			Customer cust = new Customer(0, "Олена", new char[] {'1','2','3'}, "вулиця Щорсе 117"); 
-//			Order o = new Order(0, new Date(0), cust);
-//			OrderDAO.Add(o);
-//			//
-//			Order o = new Order(0, null, cust, null);
-//			cust.getOrders().add(o);
-//			session.save(cust);
-//			session.save(o);
-//			Worker w = new Worker(0, "Ставіп", "роогоргн", "оавіглпшгк", 3, null,null);
-//			session.save(w);
-//			EquipmentDAO.getWorkplaces(w);
 		} catch(Exception e) {
 			e.printStackTrace();
 		}

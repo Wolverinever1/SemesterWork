@@ -1,5 +1,7 @@
 package model.dao;
 
+import java.util.List;
+
 import org.hibernate.Session;
 
 import model.Order_product;
@@ -25,6 +27,19 @@ public class OrderProductsDAO {
 		session.beginTransaction();
 		session.delete(o);
 		session.getTransaction().commit();
+	}
+	
+	public static List<Object[]> SelectOrderProductInfo(int order_id) {
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		session.beginTransaction();
+		@SuppressWarnings("unchecked")
+		List<Object[]> result = session.createNativeQuery("select o_p.model, p.name, o_p.count from order_product o_p inner join product p where "
+				+ "p.model = o_p.model and o_p.order_id ="+order_id).list();
+		for(Object[] arr:result) {
+			System.out.println(arr[0]+"<-->"+arr[1]+"<-->"+arr[2]);
+		}
+		session.getTransaction().commit();
+		return result;
 	}
 
 }

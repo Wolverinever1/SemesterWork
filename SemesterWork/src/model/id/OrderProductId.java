@@ -9,6 +9,10 @@ import model.Product;
 
 @Embeddable
 public class OrderProductId implements Serializable {
+	
+	private static final long serialVersionUID = 1L;
+	private Order order;
+	private Product product;
 
 	@Override
 	public int hashCode() {
@@ -40,9 +44,6 @@ public class OrderProductId implements Serializable {
 		return true;
 	}
 
-	private static final long serialVersionUID = 1L;
-	private Order order;
-	private Product product;
 	
 	public OrderProductId() {
 		// TODO Auto-generated constructor stub

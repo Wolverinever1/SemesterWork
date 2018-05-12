@@ -22,14 +22,20 @@ import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeTableColumn;
+import javafx.scene.control.TreeTableView;
 import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TreeItemPropertyValueFactory;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 import model.Equipment;
 import model.Worker;
 import model.Workplace;
 import model.dao.EquipmentDAO;
+import model.dao.OrderDAO;
+import model.dao.OrderProductsDAO;
 import model.dao.WorkerDAO;
 import model.dao.WorkplaceDAO;
 import model.resources.HibernateUtil;
@@ -59,6 +65,24 @@ public class SampleController implements Initializable {
 	TableColumn<Worker, String> lName;
 	@FXML
 	TableColumn<Worker, Integer> grade;
+	
+	@FXML
+	TreeTableColumn<OrdersCustomerProducts, String> orderIdColumn;
+	@FXML
+	TreeTableColumn<OrdersCustomerProducts,String> orderDateColumn;
+	@FXML
+	TreeTableColumn<OrdersCustomerProducts,String> customerNameColumn;
+	@FXML
+	TreeTableColumn<OrdersCustomerProducts,String> orderProductCountColumn;
+	@FXML
+	TreeTableColumn<OrdersCustomerProducts, String> orderProductModel;
+	@FXML
+	TreeTableColumn<OrdersCustomerProducts, String> orderProductName;
+	
+	
+	@FXML
+	TreeTableView<OrdersCustomerProducts> OrdersTreeView;
+	
 	@FXML
 	ChoiceBox<Integer> gradeChoiseBox;
 	@FXML
@@ -77,6 +101,7 @@ public class SampleController implements Initializable {
 
 	private void initTable() {
 		initList();
+		eqIdComboBox.arm();
 		listWorkPlaces = FXCollections.observableArrayList();
 		workerWPlacesTableView.setItems(listWorkPlaces);
 		workers.setItems(list);
@@ -121,6 +146,40 @@ public class SampleController implements Initializable {
 		workerWPlacesTableView.getColumns().add(equipmentNo);
 		workerWPlacesTableView.getColumns().add(equipmentDescription);
 	}
+	
+	@SuppressWarnings("unchecked")
+	public void initTreeView() {
+		
+		orderIdColumn=new TreeTableColumn<>("Номер замовлення");
+		orderDateColumn= new TreeTableColumn<OrdersCustomerProducts, String>("Дата замовлення");
+		customerNameColumn = new TreeTableColumn<OrdersCustomerProducts, String>("Замовник");
+		orderProductCountColumn = new TreeTableColumn<OrdersCustomerProducts, String>("Кількість");
+		orderProductModel = new TreeTableColumn<OrdersCustomerProducts, String>("Модель");
+		orderProductName = new TreeTableColumn<OrdersCustomerProducts, String>("Назва продукту");
+		
+		orderIdColumn.setCellValueFactory(new TreeItemPropertyValueFactory<OrdersCustomerProducts, String>("orderId"));
+		orderDateColumn.setCellValueFactory(new TreeItemPropertyValueFactory<OrdersCustomerProducts, String>("orderDate"));
+		customerNameColumn.setCellValueFactory(new TreeItemPropertyValueFactory<OrdersCustomerProducts, String>("customerName"));
+		orderProductCountColumn.setCellValueFactory(new TreeItemPropertyValueFactory<OrdersCustomerProducts,String>("count"));
+		orderProductModel.setCellValueFactory(new TreeItemPropertyValueFactory<OrdersCustomerProducts,String>("model"));
+		orderProductName.setCellValueFactory(new TreeItemPropertyValueFactory<OrdersCustomerProducts, String>("productName"));
+		OrdersTreeView.getColumns().addAll(orderIdColumn,customerNameColumn, orderDateColumn, orderProductCountColumn,orderProductModel, orderProductName);
+		
+		TreeItem<OrdersCustomerProducts> root = new TreeItem<OrdersCustomerProducts>();
+		List<Object[]> orders = OrderDAO.SelectOrderInfo();
+		for(Object[] order : orders) {
+			TreeItem<OrdersCustomerProducts> rootChild = new TreeItem<OrdersCustomerProducts>(new OrdersCustomerProducts(order[0].toString(),order[1].toString(),order[2].toString(),"","",""));
+			List<Object[]> products = OrderProductsDAO.SelectOrderProductInfo(new Integer(order[0].toString()));
+			for(Object[] product : products) {
+				TreeItem<OrdersCustomerProducts> child = new TreeItem<OrdersCustomerProducts>(new OrdersCustomerProducts("","","",product[0].toString(),product[1].toString(),product[2].toString()));
+				rootChild.getChildren().add(child);
+			}
+			root.getChildren().add(rootChild);
+		}
+		OrdersTreeView.setRoot(root);
+		OrdersTreeView.setShowRoot(false);
+		
+	}
 
 	@SuppressWarnings("unchecked")
 	private void initList() {
@@ -162,6 +221,7 @@ public class SampleController implements Initializable {
 			}
 		});
 		initTable();
+		initTreeView();
 	}
 
 	@FXML
@@ -170,8 +230,11 @@ public class SampleController implements Initializable {
 		lNameField.setText(w.getLName());
 		fNameField.setText(w.getFName());
 		mNameField.setText(w.getMName());
-		gradeChoiseBox.getSelectionModel().select(new Integer(w.getGrade()));
+//		gradeChoiseBox.getSelectionModel().select(new Integer(w.getGrade()));
+		gradeChoiseBox.setValue(new Integer(w.getGrade()));
+		System.out.println(w.getGrade());
 		listWorkPlaces = null;
+//		listWorkPlaces = FXCollections.observableArrayList(new LinkedList(w.getWorkplaces()));
 		listWorkPlaces = FXCollections.observableArrayList(WorkerDAO.getWorkplaces(w));
 		workerWPlacesTableView.setItems(listWorkPlaces);
 	}
@@ -203,11 +266,23 @@ public class SampleController implements Initializable {
 		WorkerDAO.Delete(workers.getSelectionModel().getSelectedItem());
 		list.remove(workers.getSelectionModel().getSelectedItem());
 		workers.refresh();
-		// workers.setItems(list);
+	}
+	
+	@FXML
+	public void WorkersWorkPlaceOnMouseClicked() {
+		machineNoField.setText((new Integer(workerWPlacesTableView.getSelectionModel().getSelectedItem().getMachineNo())).toString());
+		eqIdComboBox.setValue(new Integer( workerWPlacesTableView.getSelectionModel().getSelectedItem().getEquipment_id().getId()));
 	}
 
 	public void AddWorkerOperationAction() {
 
+	}
+	
+	@FXML
+	public void WorkPlaceDeleteOnWorker(){
+		WorkplaceDAO.Delete(workerWPlacesTableView.getSelectionModel().getSelectedItem());
+		listWorkPlaces.remove(workerWPlacesTableView.getSelectionModel().getSelectedItem());
+		workerWPlacesTableView.refresh();
 	}
 
 	@FXML
@@ -232,7 +307,7 @@ public class SampleController implements Initializable {
 		try {
 			Equipment e = EquipmentDAO.getEquipment( eqIdComboBox.getSelectionModel().getSelectedItem());
 			wp.setEquipment_id(e);
-//			wp.setWorker(workers.getSelectionModel().getSelectedItem());
+			wp.setWorker_id(workers.getSelectionModel().getSelectedItem());
 			int machineNo = Integer.parseInt(machineNoField.getText());
 			wp.setMachineNo(new Integer(machineNo));
 			WorkplaceDAO.Add(wp);
