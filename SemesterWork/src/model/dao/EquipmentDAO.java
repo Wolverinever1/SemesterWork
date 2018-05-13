@@ -63,4 +63,13 @@ public class EquipmentDAO {
 		session.getTransaction().commit();
 		return e;
 	}
+	
+	public static List<Equipment> selectAll(){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		session.beginTransaction();
+		@SuppressWarnings("unchecked")
+		List<Equipment> equipments = session.createQuery("from Equipment").list();
+		session.getTransaction().commit();
+		return equipments;
+	}
 }

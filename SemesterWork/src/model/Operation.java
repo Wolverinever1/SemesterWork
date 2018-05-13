@@ -28,6 +28,19 @@ public class Operation implements Serializable {
 	public Operation() {
 		// TODO Auto-generated constructor stub
 	}
+	
+	
+
+	public Operation(int operationId, BigDecimal price, BigDecimal time, String name, int grade, Equipment equipment) {
+		this.operationId = operationId;
+		this.price = price;
+		this.time = time;
+		this.name = name;
+		this.grade = grade;
+		this.equipment = equipment;
+		this.price.setScale(4);
+		this.time.setScale(4);
+	}
 
 	public int getOperationId() {
 		return operationId;

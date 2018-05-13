@@ -33,9 +33,9 @@ public class OrderDAO {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		session.beginTransaction();
 		@SuppressWarnings("unchecked")
-		List<Object[]> result = session.createNativeQuery("select o.order_id, o.order_date, c.customer_name\r\n" + 
-				"from `orders` o inner join `customer` c where c.`customer_id`=o.`customer_id`").list();
-//		System.out.println(result.get(0)[0]+ "<-->"+result.get(0)[1]+"<-->"+result.get(0)[2]);
+		List<Object[]> result = session.createNativeQuery("select o.order_id, o.order_date, c.customer_name " + 
+				"from orders o inner join customer c where c.customer_id = o.customer_id").list();
+		System.out.println(result.size());
 		session.getTransaction().commit();
 		return result;
 	}

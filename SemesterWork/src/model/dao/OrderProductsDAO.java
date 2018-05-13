@@ -35,9 +35,6 @@ public class OrderProductsDAO {
 		@SuppressWarnings("unchecked")
 		List<Object[]> result = session.createNativeQuery("select o_p.model, p.name, o_p.count from order_product o_p inner join product p where "
 				+ "p.model = o_p.model and o_p.order_id ="+order_id).list();
-		for(Object[] arr:result) {
-			System.out.println(arr[0]+"<-->"+arr[1]+"<-->"+arr[2]);
-		}
 		session.getTransaction().commit();
 		return result;
 	}

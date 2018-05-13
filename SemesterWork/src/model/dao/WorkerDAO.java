@@ -39,4 +39,13 @@ public class WorkerDAO {
 		session.getTransaction().commit();
 		return wp;
 	}
+	
+	@SuppressWarnings("unchecked")
+	public static List<Worker> selectAll(){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		session.beginTransaction();
+		List<Worker> workers = session.createQuery("from Worker").list();
+		session.getTransaction().commit();
+		return workers;
+	}
 }

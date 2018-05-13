@@ -8,14 +8,14 @@
 
 <AnchorPane prefHeight="578.0" prefWidth="751.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.SampleController">
    <children>
-      <TabPane fx:id="Tabs" layoutX="2.0" layoutY="6.0" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <TabPane fx:id="Tabs" layoutX="2.0" layoutY="25.0" prefHeight="553.0" prefWidth="751.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0">
         <tabs>
-          <Tab fx:id="tabWorkers" text="Workers">
+          <Tab fx:id="tabWorkers" text="Швеї">
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
                         <TableView fx:id="workerWPlacesTableView" layoutX="301.0" layoutY="367.0" onMouseClicked="#WorkersWorkPlaceOnMouseClicked" prefHeight="129.0" prefWidth="450.0" AnchorPane.bottomAnchor="4.0" AnchorPane.leftAnchor="301.0" AnchorPane.rightAnchor="0.0" />
-                        <TableView fx:id="workers" layoutY="37.0" onMouseClicked="#workersOnMouseCliked" prefHeight="302.0" prefWidth="751.0" AnchorPane.bottomAnchor="210.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="37.0" />
+                        <TableView fx:id="workers" layoutY="37.0" onMouseClicked="#workersOnMouseCliked" prefHeight="302.0" prefWidth="751.0" AnchorPane.bottomAnchor="210.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                         <Label layoutX="35.0" layoutY="270.0" text="Last name" AnchorPane.bottomAnchor="180.0" AnchorPane.leftAnchor="35.0" />
                         <Label layoutX="35.0" layoutY="294.0" text="First name" AnchorPane.bottomAnchor="150.0" AnchorPane.leftAnchor="35.0" />
                         <Label layoutX="35.0" layoutY="325.0" text="Middle name" AnchorPane.bottomAnchor="120.0" AnchorPane.leftAnchor="35.0" />
@@ -37,22 +37,28 @@
                   </AnchorPane>
             </content>
           </Tab>
-          <Tab fx:id="tabOperations" text="Operations">
+          <Tab fx:id="tabOperations" text="Операції">
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <TableView layoutX="2.0" prefHeight="205.0" prefWidth="404.0" AnchorPane.bottomAnchor="145.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                          <columns>
-                            <TableColumn prefWidth="75.0" text="C1" />
-                            <TableColumn prefWidth="75.0" text="C2" />
-                          </columns>
-                        </TableView>
-                        <TableView layoutY="205.0" prefHeight="145.0" prefWidth="404.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="205.0">
-                          <columns>
-                            <TableColumn prefWidth="75.0" text="C1" />
-                            <TableColumn prefWidth="75.0" text="C2" />
-                          </columns>
-                        </TableView>
+                        <TableView fx:id="operationsTableView" layoutY="14.0" onMouseClicked="#operationsTableViewOnMouseClicked" prefHeight="376.0" prefWidth="751.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="148.0" />
+                        <AnchorPane layoutY="-1.0" prefHeight="147.0" prefWidth="751.0" AnchorPane.bottomAnchor="377.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <children>
+                              <Button layoutX="466.0" layoutY="95.0" mnemonicParsing="false" onAction="#deleteOperationButtonAction" prefWidth="150.0" text="Видалити операцію" />
+                              <Button layoutX="248.0" layoutY="95.0" mnemonicParsing="false" onAction="#updateOperationButtonAction" prefWidth="150.0" text="Оновити дані" />
+                              <Button layoutX="28.0" layoutY="95.0" mnemonicParsing="false" onAction="#insertOperationButtonAction" prefHeight="25.0" prefWidth="150.0" text="Додати операцію" />
+                              <ChoiceBox fx:id="operationGradeChoiseBox" layoutX="541.0" layoutY="52.0" prefHeight="25.0" prefWidth="75.0" />
+                              <TextField fx:id="operationTimeTextField" layoutX="362.0" layoutY="50.0" prefHeight="25.0" prefWidth="90.0" promptText="00.0000" />
+                              <TextField fx:id="operationPriceTextField" layoutX="233.0" layoutY="50.0" prefHeight="25.0" prefWidth="90.0" promptText="00.0000" />
+                              <TextField fx:id="operationNameTextField" layoutX="112.0" layoutY="17.0" prefHeight="25.0" prefWidth="504.0" />
+                              <Label layoutX="474.0" layoutY="56.0" text="Розряд" />
+                              <Label layoutX="30.0" layoutY="21.0" text="Назва" />
+                              <Label layoutX="196.0" layoutY="54.0" text="Ціна" />
+                              <Label layoutX="334.0" layoutY="54.0" text="Час" />
+                              <Label layoutX="30.0" layoutY="56.0" text="Обладнання" />
+                              <ChoiceBox fx:id="operationEquipmentChoiseBox" layoutX="112.0" layoutY="52.0" prefHeight="25.0" prefWidth="75.0" />
+                           </children>
+                        </AnchorPane>
                      </children>
                   </AnchorPane>
             </content>
@@ -66,10 +72,65 @@
                   </AnchorPane>
               </content>
             </Tab>
+            <Tab text="Замовники">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <AnchorPane layoutY="-32.0" minHeight="0.0" minWidth="0.0" prefHeight="553.0" prefWidth="751.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <children>
+                              <TableView fx:id="customersTableView" layoutY="234.0" onMouseClicked="#customerTextAreaOnMouseClicked" prefHeight="353.0" prefWidth="751.0" AnchorPane.bottomAnchor="171.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                              <Label layoutX="8.0" layoutY="367.0" text="Ім'я замовника" AnchorPane.bottomAnchor="140.0" AnchorPane.leftAnchor="8.0" />
+                              <Label layoutX="25.0" layoutY="416.0" text="Адреса" AnchorPane.bottomAnchor="91.0" AnchorPane.leftAnchor="25.0" />
+                              <Label layoutX="25.0" layoutY="489.0" text="Телефон" AnchorPane.bottomAnchor="18.0" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="678.0" />
+                              <TextField fx:id="customerPhoneTextArea" layoutX="95.0" layoutY="485.0" prefHeight="25.0" prefWidth="175.0" promptText="+38(___)-____- ___" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="95.0" AnchorPane.rightAnchor="481.0" />
+                              <Button layoutX="286.0" layoutY="485.0" mnemonicParsing="false" onAction="#insertCustomerButtonAction" prefHeight="25.0" prefWidth="141.0" text="Додати замовника" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="286.0" AnchorPane.rightAnchor="324.0" />
+                              <Button layoutX="441.0" layoutY="485.0" mnemonicParsing="false" onAction="#updateCustomerButtonAction" prefHeight="25.0" prefWidth="143.0" text="Оновити дані" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="441.0" />
+                              <Button layoutX="596.0" layoutY="485.0" mnemonicParsing="false" onAction="#deleteCustomerButtonAction" text="Видалити замовника" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="596.0" />
+                              <TextArea fx:id="customerAddressTextArea" layoutX="95.0" layoutY="416.0" prefHeight="62.0" prefWidth="630.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="95.0" AnchorPane.rightAnchor="26.0" />
+                              <TextArea fx:id="customerNameTextArea" layoutX="95.0" layoutY="367.0" prefHeight="37.0" prefWidth="630.0" AnchorPane.bottomAnchor="120.0" AnchorPane.leftAnchor="95.0" AnchorPane.rightAnchor="26.0" />
+                           </children>
+                        </AnchorPane>
+                     </children>
+                  </AnchorPane>
+              </content>
+            </Tab>
+            <Tab text="Обладнання">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TableView fx:id="equipmentTableView" layoutX="7.0" layoutY="7.0" prefHeight="347.0" prefWidth="751.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                     </children>
+                  </AnchorPane>
+              </content>
+            </Tab>
         </tabs>
          <opaqueInsets>
             <Insets />
          </opaqueInsets>
       </TabPane>
+      <MenuBar layoutX="8.0" layoutY="14.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <menus>
+          <Menu mnemonicParsing="false" text="File">
+            <items>
+              <MenuItem mnemonicParsing="false" text="Close" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Edit">
+            <items>
+              <MenuItem mnemonicParsing="false" text="Delete" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Help">
+            <items>
+              <MenuItem mnemonicParsing="false" text="About" />
+            </items>
+          </Menu>
+            <Menu mnemonicParsing="false" text="Робота">
+              <items>
+                <MenuItem mnemonicParsing="false" text="Додати замовлення" />
+              </items>
+            </Menu>
+        </menus>
+      </MenuBar>
    </children>
 </AnchorPane>
