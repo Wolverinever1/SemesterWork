@@ -10,10 +10,8 @@ import javax.persistence.*;
 @Table(name="equipment")
 public class Equipment implements Serializable{
 	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1019860026101688630L;
+	
 	@Id
 	@Column(name="Equipment_id")
 	private int id;

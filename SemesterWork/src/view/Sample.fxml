@@ -98,7 +98,14 @@
               <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <TableView fx:id="equipmentTableView" layoutX="7.0" layoutY="7.0" prefHeight="347.0" prefWidth="751.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                        <TableView fx:id="equipmentTableView" layoutX="7.0" layoutY="7.0" prefHeight="425.0" prefWidth="751.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                        <Label layoutX="18.0" layoutY="444.0" text="ID обладнання" />
+                        <TextField fx:id="equipmentIdTextField" layoutX="107.0" layoutY="440.0" prefHeight="25.0" prefWidth="91.0" />
+                        <TextField fx:id="equipmentDescriptionTextField" layoutX="319.0" layoutY="440.0" prefHeight="25.0" prefWidth="359.0" />
+                        <Label layoutX="207.0" layoutY="444.0" text="Опис обладнання" />
+                        <Button layoutX="19.0" layoutY="473.0" mnemonicParsing="false" onAction="#addEquipment" prefWidth="160.0" text="Додати обладнання" />
+                        <Button layoutX="274.0" layoutY="473.0" mnemonicParsing="false" onAction="#updateEquipment" prefWidth="160.0" text="Оновити дані" />
+                        <Button layoutX="518.0" layoutY="473.0" mnemonicParsing="false" onAction="#deleteEquipment" prefWidth="160.0" text="Видалити обладнання" />
                      </children>
                   </AnchorPane>
               </content>
