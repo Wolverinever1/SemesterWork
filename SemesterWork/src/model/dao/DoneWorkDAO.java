@@ -1,5 +1,7 @@
 package model.dao;
 
+import java.util.List;
+
 import org.hibernate.Session;
 
 import model.Done_work;
@@ -27,4 +29,12 @@ public class DoneWorkDAO {
 		session.getTransaction().commit();
 	}
 
+	@SuppressWarnings("unchecked")
+	public static List<Done_work> selectAll(){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		session.beginTransaction();
+		List<Done_work> workers = session.createQuery("from Done_work").list();
+		session.getTransaction().commit();
+		return workers;
+	}
 }

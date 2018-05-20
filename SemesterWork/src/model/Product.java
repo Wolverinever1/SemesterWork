@@ -14,11 +14,11 @@ public class Product implements Serializable{
 	private int model;
 	private String name;
 	@OneToMany
-    @JoinColumn(name="model")
+    @JoinColumn(name="model",insertable = false, updatable=false)
 	private Set<Order_product> orders = new HashSet<>();
-	@OneToMany
-    @JoinColumn(name="model")
-	private Set<Pr_op_sequence> operations = new HashSet<>();
+//	@OneToMany
+//    @JoinColumn(name="model")
+//	private List<Pr_op_sequence> operations = new LinkedList<>();
 	
 	public Product() {
 		// TODO Auto-generated constructor stub
@@ -53,14 +53,14 @@ public class Product implements Serializable{
 		this.orders = orders;
 	}
 
-	public Set<Pr_op_sequence> getOperations() {
-		return operations;
-	}
-
-
-	public void setOperations(Set<Pr_op_sequence> operations) {
-		this.operations = operations;
-	}
+//	public List<Pr_op_sequence> getOperations() {
+//		return operations;
+//	}
+//
+//
+//	public void setOperations(List<Pr_op_sequence> operations) {
+//		this.operations = operations;
+//	}
 
 
 

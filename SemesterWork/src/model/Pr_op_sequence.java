@@ -1,30 +1,24 @@
 package model;
 
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.persistence.*;
 
 import model.id.ProducOperationtId;
 
 @Entity
-@Table (name="Pr_op_sequence")
+@Table(name = "Pr_op_sequence")
 @AssociationOverrides({
-    @AssociationOverride(name = "primaryKey.operation",
-        joinColumns = @JoinColumn(name = "operation_id")),
-    @AssociationOverride(name = "primaryKey.product",
-        joinColumns = @JoinColumn(name = "model")) })
+		@AssociationOverride(name = "primaryKey.operation", joinColumns = @JoinColumn(name = "operation_id")),
+		@AssociationOverride(name = "primaryKey.product", joinColumns = @JoinColumn(name = "model")) })
 
-public class Pr_op_sequence implements Serializable{
+public class Pr_op_sequence implements Serializable {
 	private static final long serialVersionUID = 2880808350977578906L;
-	
+
 	@EmbeddedId
 	private ProducOperationtId primaryKey = new ProducOperationtId();
 	private int number;
-	@OneToMany
-	@JoinColumns(value= {@JoinColumn(name="operation_id"),@JoinColumn(name="model")})
-	private Set<Done_work> doneWork = new HashSet<>();
+	
 	
 	public Pr_op_sequence() {
 		// TODO Auto-generated constructor stub
@@ -38,29 +32,29 @@ public class Pr_op_sequence implements Serializable{
 		this.number = number;
 	}
 
-	 @Transient
-	public Product getProduct() {
-		return getPrimaryKey().getProduct();
+	@Transient
+	public Product getModel() {
+		return getPrimaryKey().getModel();
 	}
 
-	public void setProduct(Product product) {
-		getPrimaryKey().setProduct(product);
+	public void setModel(Product product) {
+		getPrimaryKey().setModel(product);
 	}
 
-	 @Transient
+	@Transient
 	public Operation getOperation() {
-		return getPrimaryKey().getOperation();
+		return getPrimaryKey().getOperation_id();
 	}
 
 	public void setOperation(Operation operation) {
-		getPrimaryKey().setOperation(operation);
+		getPrimaryKey().setOperation_id(operation);
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((doneWork == null) ? 0 : doneWork.hashCode());
+//		result = prime * result + ((doneWork == null) ? 0 : doneWork.hashCode());
 		result = prime * result + ((primaryKey == null) ? 0 : primaryKey.hashCode());
 		result = prime * result + number;
 		return result;
@@ -75,11 +69,11 @@ public class Pr_op_sequence implements Serializable{
 		if (getClass() != obj.getClass())
 			return false;
 		Pr_op_sequence other = (Pr_op_sequence) obj;
-		if (doneWork == null) {
-			if (other.doneWork != null)
-				return false;
-		} else if (!doneWork.equals(other.doneWork))
-			return false;
+//		if (doneWork == null) {
+//			if (other.doneWork != null)
+//				return false;
+//		} else if (!doneWork.equals(other.doneWork))
+//			return false;
 		if (primaryKey == null) {
 			if (other.primaryKey != null)
 				return false;
@@ -90,19 +84,13 @@ public class Pr_op_sequence implements Serializable{
 		return true;
 	}
 
-	public Set<Done_work> getDoneWork() {
-		return doneWork;
-	}
 
-	public void setDoneWork(Set<Done_work> doneWork) {
-		this.doneWork = doneWork;
-	}
-
+	@EmbeddedId
 	public ProducOperationtId getPrimaryKey() {
 		return primaryKey;
 	}
 
-	public void setId(ProducOperationtId id) {
+	public void setPrimaryKey(ProducOperationtId id) {
 		this.primaryKey = id;
 	}
 

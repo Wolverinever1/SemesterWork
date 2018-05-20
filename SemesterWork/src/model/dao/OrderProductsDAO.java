@@ -38,5 +38,14 @@ public class OrderProductsDAO {
 		session.getTransaction().commit();
 		return result;
 	}
+	
+	@SuppressWarnings("unchecked")
+	public static List<Order_product> selectAll(){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		session.beginTransaction();
+		List<Order_product> workers = session.createQuery("from Order_product").list();
+		session.getTransaction().commit();
+		return workers;
+	}
 
 }

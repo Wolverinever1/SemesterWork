@@ -1,8 +1,6 @@
 package model;
 
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.persistence.*;
 
@@ -17,12 +15,12 @@ public class Equipment implements Serializable{
 	private int id;
 	@Column(name="description")
 	private String description;
-	@OneToMany
-	@JoinColumn(name="Equipment_id")
-	private Set<Operation> operations = new HashSet<>();
-	@OneToMany
-	@JoinColumn(name="Equipment_id")
-	private Set<Workplace> workplaces = new HashSet<>();
+//	@OneToMany
+//	@JoinColumn(name="Equipment_id")
+//	private Set<Operation> operations = new HashSet<>();
+//	@OneToMany
+//	@JoinColumn(name="Equipment_id")
+//	private Set<Workplace> workplaces = new HashSet<>();
 	
 	@Override
 	public int hashCode() {
@@ -30,8 +28,8 @@ public class Equipment implements Serializable{
 		int result = 1;
 		result = prime * result + ((description == null) ? 0 : description.hashCode());
 		result = prime * result + id;
-		result = prime * result + ((operations == null) ? 0 : operations.hashCode());
-		result = prime * result + ((workplaces == null) ? 0 : workplaces.hashCode());
+//		result = prime * result + ((operations == null) ? 0 : operations.hashCode());
+//		result = prime * result + ((workplaces == null) ? 0 : workplaces.hashCode());
 		return result;
 	}
 
@@ -51,16 +49,16 @@ public class Equipment implements Serializable{
 			return false;
 		if (id != other.id)
 			return false;
-		if (operations == null) {
-			if (other.operations != null)
-				return false;
-		} else if (!operations.equals(other.operations))
-			return false;
-		if (workplaces == null) {
-			if (other.workplaces != null)
-				return false;
-		} else if (!workplaces.equals(other.workplaces))
-			return false;
+//		if (operations == null) {
+//			if (other.operations != null)
+//				return false;
+//		} else if (!operations.equals(other.operations))
+//			return false;
+//		if (workplaces == null) {
+//			if (other.workplaces != null)
+//				return false;
+//		} else if (!workplaces.equals(other.workplaces))
+//			return false;
 		return true;
 	}
 
@@ -70,6 +68,12 @@ public class Equipment implements Serializable{
 
 	public Equipment() {
 		// TODO Auto-generated constructor stub
+	}
+	
+
+	public Equipment(int id, String description) {
+		this.id = id;
+		this.description = description;
 	}
 
 	public int getId() {
@@ -88,20 +92,26 @@ public class Equipment implements Serializable{
 		this.description = description;
 	}
 
-	public Set<Operation> getOperations() {
-		return operations;
+//	public Set<Operation> getOperations() {
+//		return operations;
+//	}
+//
+//	public void setOperations(Set<Operation> operations) {
+//		this.operations = operations;
+//	}
+
+//	public Set<Workplace> getWorkplaces() {
+//		return workplaces;
+//	}
+//
+//	public void setWorkplaces(Set<Workplace> workplaces) {
+//		this.workplaces = workplaces;
+//	}
+
+	@Override
+	public String toString() {
+		return  id + " - " + description;
 	}
 
-	public void setOperations(Set<Operation> operations) {
-		this.operations = operations;
-	}
-
-	public Set<Workplace> getWorkplaces() {
-		return workplaces;
-	}
-
-	public void setWorkplaces(Set<Workplace> workplaces) {
-		this.workplaces = workplaces;
-	}
-
+	
 }

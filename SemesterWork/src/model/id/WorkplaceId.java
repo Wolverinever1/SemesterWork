@@ -66,7 +66,7 @@ public class WorkplaceId implements Serializable{
 		return true;
 	}
 
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne
 	public Worker getWorker_id() {
 		return worker_id;
 	}

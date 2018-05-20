@@ -48,4 +48,13 @@ public class WorkerDAO {
 		session.getTransaction().commit();
 		return workers;
 	}
+	
+	public static Worker getWorker(int id) {
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		session.beginTransaction();
+		Worker w = (Worker) session.createQuery("from Worker where worker_id="+id).list().get(0);
+		session.getTransaction().commit();
+		return w;
+	}
+	
 }

@@ -20,24 +20,19 @@ import model.id.WorkplaceId;
 public class Workplace implements Serializable {
 	private static final long serialVersionUID = -6425106669200558622L;
 
+	public Workplace(Worker w, Equipment e, int machineNo) {
+		this.primaryKey = new WorkplaceId();
+		this.primaryKey.setEquipment_id(e);
+		this.primaryKey.setMachineNo(machineNo);
+		this.primaryKey.setWorker_id(w);
+	}
+
 	@EmbeddedId
 	private WorkplaceId primaryKey = new WorkplaceId();
 	
-//	@ManyToOne
-//	@JoinColumn(name="worker_id")
-//	private Worker worker_id;
-
 	public Workplace() {
 	}
 	
-//	public Worker getWorker_id() {
-//		return worker_id;
-//	}
-//	
-//	public void setWorker_id(Worker worker_id) {
-//		this.worker_id = worker_id;
-//	}
-
 	@Transient
 	public int getMachineNo() {
 		return getPrimaryKey().getMachineNo();
@@ -67,7 +62,7 @@ public class Workplace implements Serializable {
 		getPrimaryKey().setEquipment_id(equipment);
 	}
 
-	 @EmbeddedId
+	@EmbeddedId
 	public WorkplaceId getPrimaryKey() {
 		return primaryKey;
 	}
@@ -81,7 +76,6 @@ public class Workplace implements Serializable {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((primaryKey == null) ? 0 : primaryKey.hashCode());
-//		result = prime * result + ((worker_id == null) ? 0 : worker_id.hashCode());
 		return result;
 	}
 
@@ -99,11 +93,6 @@ public class Workplace implements Serializable {
 				return false;
 		} else if (!primaryKey.equals(other.primaryKey))
 			return false;
-//		if (worker_id == null) {
-//			if (other.worker_id != null)
-//				return false;
-//		} else if (!worker_id.equals(other.worker_id))
-//			return false;
 		return true;
 	}
 

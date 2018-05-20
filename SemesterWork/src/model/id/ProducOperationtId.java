@@ -11,20 +11,21 @@ import model.Product;
 public class ProducOperationtId implements Serializable{
 	
 	private static final long serialVersionUID = -8933048132687588463L;
-	private Product product;
-	private Operation operation;
+	private Product model;
+	private Operation operation_id;
 	
 	@ManyToOne(cascade = CascadeType.ALL)
-	public Product getProduct() {
-		return product;
+	@JoinColumn(name="model")
+	public Product getModel() {
+		return model;
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((operation == null) ? 0 : operation.hashCode());
-		result = prime * result + ((product == null) ? 0 : product.hashCode());
+		result = prime * result + ((operation_id == null) ? 0 : operation_id.hashCode());
+		result = prime * result + ((model == null) ? 0 : model.hashCode());
 		return result;
 	}
 
@@ -37,30 +38,31 @@ public class ProducOperationtId implements Serializable{
 		if (getClass() != obj.getClass())
 			return false;
 		ProducOperationtId other = (ProducOperationtId) obj;
-		if (operation == null) {
-			if (other.operation != null)
+		if (operation_id == null) {
+			if (other.operation_id != null)
 				return false;
-		} else if (!operation.equals(other.operation))
+		} else if (!operation_id.equals(other.operation_id))
 			return false;
-		if (product == null) {
-			if (other.product != null)
+		if (model == null) {
+			if (other.model != null)
 				return false;
-		} else if (!product.equals(other.product))
+		} else if (!model.equals(other.model))
 			return false;
 		return true;
 	}
 
-	public void setProduct(Product product) {
-		this.product = product;
+	public void setModel(Product product) {
+		this.model = product;
 	}
 
 	@ManyToOne(cascade = CascadeType.ALL)
-	public Operation getOperation() {
-		return operation;
+	@JoinColumn(name="operation_id")
+	public Operation getOperation_id() {
+		return operation_id;
 	}
 
-	public void setOperation(Operation operation) {
-		this.operation = operation;
+	public void setOperation_id(Operation operation) {
+		this.operation_id = operation;
 	}
 
 	public ProducOperationtId() {

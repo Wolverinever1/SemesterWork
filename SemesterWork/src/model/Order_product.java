@@ -10,20 +10,25 @@ import model.id.OrderProductId;
 
 @Entity
 @Table(name = "order_product")
-@AssociationOverrides({ @AssociationOverride(name = "primaryKey.order", joinColumns = @JoinColumn(name = "order_id")),
-		@AssociationOverride(name = "primaryKey.product", joinColumns = @JoinColumn(name = "model")) })
+@AssociationOverrides({
+		@AssociationOverride(name = "primaryKey.order_id", joinColumns = @JoinColumn(name = "order_id")),
+		@AssociationOverride(name = "primaryKey.model", joinColumns = @JoinColumn(name = "model")) })
 public class Order_product implements Serializable {
-	/**
-	 * 
-	 */
+	
 	private static final long serialVersionUID = 1L;
 	private int count;
 	@EmbeddedId
 	private OrderProductId primaryKey = new OrderProductId();
-	@OneToMany
-	@JoinColumns(value= {@JoinColumn(name="order_id"), @JoinColumn(name="model")})
-	private Set<Done_work> doneWork = new HashSet<>();
 
+	@OneToMany
+	@JoinColumns(value = { @JoinColumn(name = "order_id"), @JoinColumn(name = "model") })
+	private Set<Done_work> doneWork = new HashSet<>();
+	
+	public Order_product() {
+		// TODO Auto-generated constructor stub
+	}
+
+	@EmbeddedId
 	public OrderProductId getPrimaryKey() {
 		return primaryKey;
 	}
@@ -33,26 +38,23 @@ public class Order_product implements Serializable {
 	}
 
 	@Transient
-	public Order getOrder() {
-		return getPrimaryKey().getOrder();
+	public Order getOrder_id() {
+		return getPrimaryKey().getOrder_id();
 	}
 
 	public void setOrder(Order order) {
-		getPrimaryKey().setOrder(order);
+		getPrimaryKey().setOrder_id(order);
 	}
 
 	@Transient
-	public Product getProduct() {
-		return getPrimaryKey().getProduct();
+	public Product getModel() {
+		return getPrimaryKey().getModel();
 	}
 
-	public void setProduct(Product product) {
-		getPrimaryKey().setProduct(product);
+	public void setModel(Product product) {
+		getPrimaryKey().setModel(product);
 	}
 
-	public Order_product() {
-		// TODO Auto-generated constructor stub
-	}
 
 	public int getCount() {
 		return count;
@@ -62,6 +64,9 @@ public class Order_product implements Serializable {
 		this.count = count;
 	}
 
+	@OneToMany
+	@JoinColumns({ @JoinColumn(name = "model"),
+			@JoinColumn(name = "order_id") })
 	public Set<Done_work> getDoneWork() {
 		return doneWork;
 	}

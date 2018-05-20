@@ -2,12 +2,15 @@ package model;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "operation")
 public class Operation implements Serializable {
+	
 	private static final long serialVersionUID = 1L;
 	@Id
 	@Column(name = "operation_id")
@@ -20,6 +23,20 @@ public class Operation implements Serializable {
 	private String name;
 	@Column(name = "op_grade")
 	private int grade;
+	@OneToMany
+	@JoinColumn(name = "operation_id")
+	private Set<Done_work> doneWork = new HashSet<>();
+
+	@OneToMany
+	@JoinColumn(name = "operation_id")
+	public Set<Done_work> getDoneWork() {
+		return doneWork;
+	}
+
+	public void setDoneWork(Set<Done_work> doneWork) {
+		this.doneWork = doneWork;
+	}
+	
 
 	@ManyToOne
 	@JoinColumn(name = "Equipment_id")
@@ -28,8 +45,6 @@ public class Operation implements Serializable {
 	public Operation() {
 		// TODO Auto-generated constructor stub
 	}
-	
-	
 
 	public Operation(int operationId, BigDecimal price, BigDecimal time, String name, int grade, Equipment equipment) {
 		this.operationId = operationId;
@@ -89,5 +104,62 @@ public class Operation implements Serializable {
 	public void setEquipment(Equipment equipment) {
 		this.equipment = equipment;
 	}
+	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((doneWork == null) ? 0 : doneWork.hashCode());
+		result = prime * result + ((equipment == null) ? 0 : equipment.hashCode());
+		result = prime * result + grade;
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + operationId;
+		result = prime * result + ((price == null) ? 0 : price.hashCode());
+		result = prime * result + ((time == null) ? 0 : time.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Operation other = (Operation) obj;
+//		if (doneWork == null) {
+//			if (other.doneWork != null)
+//				return false;
+//		} else if (!doneWork.equals(other.doneWork))
+//			return false;
+		if (equipment == null) {
+			if (other.equipment != null)
+				return false;
+		} else if (!equipment.equals(other.equipment))
+			return false;
+		if (grade != other.grade)
+			return false;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		if (operationId != other.operationId)
+			return false;
+		if (price == null) {
+			if (other.price != null)
+				return false;
+		} else if (!price.equals(other.price))
+			return false;
+		if (time == null) {
+			if (other.time != null)
+				return false;
+		} else if (!time.equals(other.time))
+			return false;
+		return true;
+	}
+
+
 
 }

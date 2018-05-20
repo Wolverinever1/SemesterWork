@@ -98,14 +98,49 @@
               <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <TableView fx:id="equipmentTableView" layoutX="7.0" layoutY="7.0" prefHeight="425.0" prefWidth="751.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                        <TableView fx:id="equipmentTableView" onMouseClicked="#equipmentListOnMouseClicked" prefHeight="425.0" prefWidth="751.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                         <Label layoutX="18.0" layoutY="444.0" text="ID обладнання" />
                         <TextField fx:id="equipmentIdTextField" layoutX="107.0" layoutY="440.0" prefHeight="25.0" prefWidth="91.0" />
                         <TextField fx:id="equipmentDescriptionTextField" layoutX="319.0" layoutY="440.0" prefHeight="25.0" prefWidth="359.0" />
                         <Label layoutX="207.0" layoutY="444.0" text="Опис обладнання" />
-                        <Button layoutX="19.0" layoutY="473.0" mnemonicParsing="false" onAction="#addEquipment" prefWidth="160.0" text="Додати обладнання" />
-                        <Button layoutX="274.0" layoutY="473.0" mnemonicParsing="false" onAction="#updateEquipment" prefWidth="160.0" text="Оновити дані" />
-                        <Button layoutX="518.0" layoutY="473.0" mnemonicParsing="false" onAction="#deleteEquipment" prefWidth="160.0" text="Видалити обладнання" />
+                        <Button layoutX="19.0" layoutY="473.0" mnemonicParsing="false" onAction="#addEquipment" prefHeight="25.0" prefWidth="180.0" text="Додати обладнання" />
+                        <Button layoutX="256.0" layoutY="473.0" mnemonicParsing="false" onAction="#updateEquipment" prefWidth="180.0" text="Оновити дані" />
+                        <Button layoutX="499.0" layoutY="473.0" mnemonicParsing="false" onAction="#deleteEquipment" prefWidth="180.0" text="Видалити обладнання" />
+                     </children>
+                  </AnchorPane>
+              </content>
+            </Tab>
+            <Tab text="Робочі місця">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TableView fx:id="workplacesTableView" layoutX="5.0" layoutY="93.0" onMouseClicked="#workplaceOnMouseClicked" prefHeight="437.0" prefWidth="751.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+                        <ChoiceBox fx:id="workplaceEquipmentChoiceBox" layoutX="293.0" layoutY="14.0" prefHeight="25.0" prefWidth="171.0" />
+                        <ChoiceBox fx:id="workplaceWorkerChoiceBox" layoutX="543.0" layoutY="14.0" prefHeight="25.0" prefWidth="196.0" />
+                        <TextField fx:id="workplaceMachineNoTextField" layoutX="120.0" layoutY="14.0" prefHeight="25.0" prefWidth="79.0" />
+                        <Label layoutX="13.0" layoutY="18.0" text="Номер машинки" />
+                        <Label layoutX="217.0" layoutY="18.0" text="Обладнання" />
+                        <Label layoutX="475.0" layoutY="18.0" text="Працівник" />
+                        <Button layoutX="534.0" layoutY="48.0" mnemonicParsing="false" onAction="#deleteWorkPlace" prefHeight="25.0" prefWidth="200.0" text="Видалити робоче місце" />
+                        <Button layoutX="279.0" layoutY="48.0" mnemonicParsing="false" onAction="#updateWorkPlace" prefHeight="25.0" prefWidth="200.0" text="Оновити дані" />
+                        <Button layoutX="14.0" layoutY="48.0" mnemonicParsing="false" onAction="#addWorkPlace" prefHeight="25.0" prefWidth="202.0" text="Додати робоче місце" />
+                     </children>
+                  </AnchorPane>
+              </content>
+            </Tab>
+            <Tab text="Продукція">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TableView fx:id="productTableView" layoutX="14.0" layoutY="82.0" prefHeight="442.0" prefWidth="751.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="82.0" />
+                        <TextField fx:id="productModelTextField" layoutX="65.0" layoutY="16.0" prefHeight="25.0" prefWidth="83.0" />
+                        <Label layoutX="14.0" layoutY="20.0" text="Модель" />
+                        <Label layoutX="160.0" layoutY="20.0" text="Назва" />
+                        <TextField fx:id="productNameTextField" layoutX="203.0" layoutY="16.0" prefHeight="25.0" prefWidth="374.0" />
+                        <Button layoutX="594.0" layoutY="16.0" mnemonicParsing="false" onAction="#productAddOperationSequence" prefHeight="25.0" prefWidth="142.0" text="Додати операції" />
+                        <Button layoutX="14.0" layoutY="48.0" mnemonicParsing="false" onAction="#addProduct" text="Додати продукцію" />
+                        <Button layoutX="151.0" layoutY="48.0" mnemonicParsing="false" onAction="#updateProduct" text="Оновити дані" />
+                        <Button layoutX="258.0" layoutY="48.0" mnemonicParsing="false" onAction="#deleteProduct" text="Видалити продукцію" />
                      </children>
                   </AnchorPane>
               </content>

@@ -1,5 +1,7 @@
 package model.dao;
 
+import java.util.List;
+
 import org.hibernate.Session;
 
 import model.Product;
@@ -25,5 +27,14 @@ public class ProductDAO {
 		session.beginTransaction();
 		session.delete(p);
 		session.getTransaction().commit();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static List<Product> selectAll(){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		session.beginTransaction();
+		List<Product> products = session.createQuery("from Product").list();
+		session.getTransaction().commit();
+		return products;
 	}
 }

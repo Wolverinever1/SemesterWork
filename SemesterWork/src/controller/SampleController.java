@@ -1,17 +1,23 @@
 package controller;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Scanner;
+
+import org.hibernate.Session;
 
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ChoiceBox;
@@ -29,20 +35,29 @@ import javafx.scene.control.TreeTableView;
 import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
+import javafx.scene.layout.AnchorPane;
+import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 import model.Customer;
+import model.Done_work;
 import model.Equipment;
 import model.Operation;
+import model.OrdersCustomerProducts;
+import model.Product;
+import model.ProductSaver;
 import model.Worker;
 import model.Workplace;
 import model.dao.CustomerDAO;
+import model.dao.DoneWorkDAO;
 import model.dao.EquipmentDAO;
 import model.dao.OperationDAO;
 import model.dao.OrderDAO;
 import model.dao.OrderProductsDAO;
+import model.dao.ProductDAO;
 import model.dao.WorkerDAO;
 import model.dao.WorkplaceDAO;
+import model.resources.HibernateUtil;
 
 public class SampleController implements Initializable {
 	@FXML
@@ -60,7 +75,15 @@ public class SampleController implements Initializable {
 	TableView<Operation> operationsTableView;
 	@FXML
 	TableView<Equipment> equipmentTableView;
+	@FXML
+	TableView<Workplace> workplacesTableView;
+	@FXML
+	TableView<Product> productTableView;
 
+	@FXML
+	TableColumn<Product, Integer> productModel;
+	@FXML
+	TableColumn<Product, String> productName;
 	@FXML
 	TableColumn<Workplace, Integer> machineNo;
 	@FXML
@@ -101,6 +124,18 @@ public class SampleController implements Initializable {
 	TableColumn<Equipment, Integer> equipmentIdColumn;
 	@FXML
 	TableColumn<Equipment, String> equipmentDescriptionColumn;
+	@FXML
+	TableColumn<Workplace, Integer> workplaceIdColumn;
+	@FXML
+	TableColumn<Workplace, Integer> workplaceEqIdColumn;
+	@FXML
+	TableColumn<Workplace, Integer> workplaceWorkerIdColumn;
+	@FXML
+	TableColumn<Workplace, String> workplaceWorkerFNColumn;
+	@FXML
+	TableColumn<Workplace, String> workplaceWorkerMNColumn;
+	@FXML
+	TableColumn<Workplace, String> workplaceWorkerLNColumn;
 
 	@FXML
 	TreeTableColumn<OrdersCustomerProducts, String> orderIdColumn;
@@ -124,6 +159,10 @@ public class SampleController implements Initializable {
 	ChoiceBox<Integer> operationGradeChoiseBox;
 	@FXML
 	ChoiceBox<Integer> operationEquipmentChoiseBox;
+	@FXML
+	ChoiceBox<Equipment> workplaceEquipmentChoiceBox;
+	@FXML
+	ChoiceBox<Worker> workplaceWorkerChoiceBox;
 
 	@FXML
 	ComboBox<Integer> eqIdComboBox;
@@ -144,23 +183,74 @@ public class SampleController implements Initializable {
 	TextField operationPriceTextField;
 	@FXML
 	TextField operationNameTextField;
+	@FXML
+	TextField equipmentIdTextField;
+	@FXML
+	TextField equipmentDescriptionTextField;
+	@FXML
+	TextField workplaceMachineNoTextField;
+	@FXML
+	TextField productModelTextField;
+	@FXML
+	TextField productNameTextField;
 
 	@FXML
 	TextArea customerAddressTextArea;
 	@FXML
 	TextArea customerNameTextArea;
 
-	private static ObservableList<Worker> list;
-	private static ObservableList<Workplace> listWorkPlaces;
-	private static ObservableList<Customer> listCustomers;
-	private static ObservableList<Operation> listOperations;
-	private static ObservableList<Equipment> listEquipment;
+	private ObservableList<Worker> list;
+	private ObservableList<Workplace> listWorkPlaces;
+	private ObservableList<Customer> listCustomers;
+	private ObservableList<Operation> listOperations;
+	private ObservableList<Equipment> listEquipment;
+	private ObservableList<Product> listProduct;
 
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
+		// WorkplaceDAO.selectAll();
+		// ProductOperationsDAO.selectAll();
+		OrderProductsDAO.selectAll();
+
+		
+		List<Done_work> dw = DoneWorkDAO.selectAll();
+		System.out.println("stop");
+		dw.get(0).getWorker_id().getGrade();
 		gradeChoiseBox.getItems().addAll(1, 2, 3, 4, 5, 6);
 		operationGradeChoiseBox.getItems().addAll(1, 2, 3, 4, 5, 6);
+		workplaceEquipmentChoiceBox.getItems().addAll(EquipmentDAO.selectAll());
+		workplaceWorkerChoiceBox.getItems().addAll(WorkerDAO.selectAll());
+		workplaceEquipmentChoiceBox.setConverter(new StringConverter<Equipment>() {
 
+			@Override
+			public String toString(Equipment object) {
+				return object.getId() + " - " + object.getDescription();
+			}
+
+			@Override
+			public Equipment fromString(String string) {
+				Scanner s = new Scanner(string);
+				Equipment e = EquipmentDAO.getEquipment(s.nextInt());
+				s.close();
+				return e;
+			}
+		});
+		workplaceWorkerChoiceBox.setConverter(new StringConverter<Worker>() {
+
+			@Override
+			public String toString(Worker object) {
+				return object.getWorker_id() + " - " + object.getLName() + " " + object.getFName() + " "
+						+ object.getMName();
+			}
+
+			@Override
+			public Worker fromString(String string) {
+				Scanner s = new Scanner(string);
+				Worker e = WorkerDAO.getWorker(s.nextInt());
+				s.close();
+				return e;
+			}
+		});
 		List<Integer> list = EquipmentDAO.getEquipmentId();
 		// eqIdComboBox.setCellFactory(new Callback<ListView<Integer>,
 		// ListCell<Integer>>() {
@@ -195,6 +285,8 @@ public class SampleController implements Initializable {
 		initCustomers();
 		initOperationsTable();
 		initEquipmentList();
+		intitWorkplaceTable();
+		initProductTable();
 	}
 
 	private void initTable() {
@@ -320,6 +412,17 @@ public class SampleController implements Initializable {
 	}
 
 	@SuppressWarnings("unchecked")
+	public void initProductTable() {
+		productModel = new TableColumn<Product, Integer>("Модель");
+		productName = new TableColumn<Product, String>("Назва");
+		productModel.setCellValueFactory(new PropertyValueFactory<>("model"));
+		productName.setCellValueFactory(new PropertyValueFactory<>("name"));
+		productTableView.getColumns().addAll(productModel,productName);
+		listProduct = FXCollections.observableArrayList(ProductDAO.selectAll());
+		productTableView.setItems(listProduct);
+	}
+
+	@SuppressWarnings("unchecked")
 	private void initEquipmentList() {
 		equipmentIdColumn = new TableColumn<Equipment, Integer>("ID Обладнання");
 		equipmentDescriptionColumn = new TableColumn<Equipment, String>("Опис");
@@ -360,6 +463,71 @@ public class SampleController implements Initializable {
 		customersTableView.setItems(listCustomers);
 	}
 
+	@SuppressWarnings("unchecked")
+	private void intitWorkplaceTable() {
+		workplaceIdColumn = new TableColumn<Workplace, Integer>("Номер машинки");
+		workplaceEqIdColumn = new TableColumn<Workplace, Integer>("Обладнання");
+		workplaceWorkerIdColumn = new TableColumn<Workplace, Integer>("Код працівника");
+		workplaceWorkerFNColumn = new TableColumn<Workplace, String>("Ім'я");
+		workplaceWorkerMNColumn = new TableColumn<Workplace, String>("По-батькові");
+		workplaceWorkerLNColumn = new TableColumn<Workplace, String>("Прізвище");
+
+		Session s = HibernateUtil.getSessionFactory().getCurrentSession();
+		workplaceIdColumn.setCellValueFactory(
+				new Callback<TableColumn.CellDataFeatures<Workplace, Integer>, ObservableValue<Integer>>() {
+
+					@Override
+					public ObservableValue<Integer> call(CellDataFeatures<Workplace, Integer> param) {
+						return new ReadOnlyObjectWrapper<>(param.getValue().getMachineNo());
+					}
+				});
+		workplaceEqIdColumn.setCellValueFactory(
+				new Callback<TableColumn.CellDataFeatures<Workplace, Integer>, ObservableValue<Integer>>() {
+
+					@Override
+					public ObservableValue<Integer> call(CellDataFeatures<Workplace, Integer> param) {
+						return new ReadOnlyObjectWrapper<>(param.getValue().getEquipment_id().getId());
+					}
+				});
+		workplaceWorkerIdColumn.setCellValueFactory(
+				new Callback<TableColumn.CellDataFeatures<Workplace, Integer>, ObservableValue<Integer>>() {
+
+					@Override
+					public ObservableValue<Integer> call(CellDataFeatures<Workplace, Integer> param) {
+						return new ReadOnlyObjectWrapper<>(param.getValue().getWorker_id().getWorker_id());
+					}
+				});
+		workplaceWorkerFNColumn.setCellValueFactory(
+				new Callback<TableColumn.CellDataFeatures<Workplace, String>, ObservableValue<String>>() {
+
+					@Override
+					public ObservableValue<String> call(CellDataFeatures<Workplace, String> param) {
+						return new ReadOnlyObjectWrapper<>(param.getValue().getWorker_id().getFName());
+					}
+				});
+		workplaceWorkerMNColumn.setCellValueFactory(
+				new Callback<TableColumn.CellDataFeatures<Workplace, String>, ObservableValue<String>>() {
+
+					@Override
+					public ObservableValue<String> call(CellDataFeatures<Workplace, String> param) {
+						return new ReadOnlyObjectWrapper<>(param.getValue().getWorker_id().getMName());
+					}
+				});
+		workplaceWorkerLNColumn.setCellValueFactory(
+				new Callback<TableColumn.CellDataFeatures<Workplace, String>, ObservableValue<String>>() {
+
+					@Override
+					public ObservableValue<String> call(CellDataFeatures<Workplace, String> param) {
+						return new ReadOnlyObjectWrapper<>(param.getValue().getWorker_id().getLName());
+					}
+				});
+		workplacesTableView.getColumns().addAll(workplaceIdColumn, workplaceEqIdColumn, workplaceWorkerIdColumn,
+				workplaceWorkerLNColumn, workplaceWorkerFNColumn, workplaceWorkerMNColumn);
+		listWorkPlaces = FXCollections.observableArrayList(WorkplaceDAO.selectAll());
+		workplacesTableView.setItems(listWorkPlaces);
+		s.close();
+	}
+
 	@FXML
 	public void workersOnMouseCliked() {
 		Worker w = workers.getSelectionModel().getSelectedItem();
@@ -389,6 +557,14 @@ public class SampleController implements Initializable {
 		customerNameTextArea.setText(c.getCustomerName());
 		customerAddressTextArea.setText(c.getAddress());
 		customerPhoneTextArea.setText(new String(c.getPhone()));
+	}
+
+	@FXML
+	public void workplaceOnMouseClicked() {
+		Workplace wp= workplacesTableView.getSelectionModel().getSelectedItem();
+		workplaceEquipmentChoiceBox.setValue(wp.getEquipment_id());
+		workplaceMachineNoTextField.setText(new Integer(wp.getMachineNo()).toString());
+		workplaceWorkerChoiceBox.setValue(wp.getWorker_id());
 	}
 
 	@FXML
@@ -431,6 +607,13 @@ public class SampleController implements Initializable {
 	// public void AddWorkerOperationAction() {
 	//
 	// }
+
+	@FXML
+	public void equipmentListOnMouseClicked() {
+		Equipment e = equipmentTableView.getSelectionModel().getSelectedItem();
+		equipmentIdTextField.setText((new Integer(e.getId()).toString()));
+		equipmentDescriptionTextField.setText(e.getDescription());
+	}
 
 	@FXML
 	public void WorkPlaceDeleteOnWorker() {
@@ -514,7 +697,7 @@ public class SampleController implements Initializable {
 			listOperations.get(index).setTime(new BigDecimal(operationTimeTextField.getText()).setScale(4));
 			listOperations.get(index).setEquipment(EquipmentDAO.getEquipment(operationEquipmentChoiseBox.getValue()));
 			listOperations.get(index).setGrade(operationGradeChoiseBox.getValue());
-			listOperations.get(index).setName(operationNameTextField.getText());
+			listOperations.get(index).setName(operationNameTextField.getText().trim());
 		} catch (ArithmeticException e) {
 			Alert alert = new Alert(AlertType.INFORMATION);
 			alert.setTitle("");
@@ -531,7 +714,7 @@ public class SampleController implements Initializable {
 			Alert alert = new Alert(AlertType.INFORMATION);
 			alert.setTitle("");
 			alert.setHeaderText("Увага!");
-			alert.setContentText("Будь ласка, перевірте введені дані.");
+			alert.setContentText("Будь ласка, перевірте введені дані. Операцію не додано.");
 			alert.showAndWait();
 			return;
 		}
@@ -546,5 +729,132 @@ public class SampleController implements Initializable {
 				new BigDecimal(operationTimeTextField.getText()), operationNameTextField.getText(),
 				operationGradeChoiseBox.getValue(), e);
 		OperationDAO.Add(o);
+	}
+
+	@FXML
+	public void addEquipment() {
+		try {
+			Equipment e = new Equipment(new Integer(equipmentIdTextField.getText()),
+					equipmentDescriptionTextField.getText());
+			EquipmentDAO.Add(e);
+			listEquipment.add(e);
+			equipmentTableView.refresh();
+		} catch (NumberFormatException e) {
+			Alert alert = new Alert(AlertType.INFORMATION);
+			alert.setTitle("");
+			alert.setHeaderText("Увага!");
+			alert.setContentText("Будь ласка, перевірте введені дані. Обладнання не додано.");
+			alert.showAndWait();
+		}
+	}
+
+	@FXML
+	public void updateEquipment() {
+		try {
+			int index = equipmentTableView.getSelectionModel().getSelectedIndex();
+			listEquipment.get(index).setId(new Integer(equipmentIdTextField.getText()));
+			listEquipment.get(index).setDescription(equipmentDescriptionTextField.getText());
+			EquipmentDAO.Update(listEquipment.get(index));
+			equipmentTableView.refresh();
+		} catch (NumberFormatException e) {
+			Alert alert = new Alert(AlertType.INFORMATION);
+			alert.setTitle("");
+			alert.setHeaderText("Увага!");
+			alert.setContentText("Будь ласка, перевірте введені дані. Дані про обладнання не оновлено.");
+			alert.showAndWait();
+		}
+	}
+
+	@FXML
+	public void deleteEquipment() {
+		EquipmentDAO.Delete(equipmentTableView.getSelectionModel().getSelectedItem());
+		listEquipment.remove(equipmentTableView.getSelectionModel().getSelectedItem());
+		equipmentTableView.refresh();
+	}
+
+	@FXML
+	public void deleteWorkPlace() {
+		WorkplaceDAO.Delete(workplacesTableView.getSelectionModel().getSelectedItem());
+		listWorkPlaces.remove(workplacesTableView.getSelectionModel().getSelectedItem());
+		workplacesTableView.refresh();
+	}
+
+	@FXML
+	public void updateWorkPlace() {
+		int index = workplacesTableView.getSelectionModel().getSelectedIndex();
+		try {
+			listWorkPlaces.get(index).setMachineNo(new Integer(workplaceMachineNoTextField.getText().trim()));
+			listWorkPlaces.get(index).setEquipment_id(workplaceEquipmentChoiceBox.getValue());
+			listWorkPlaces.get(index).setWorker_id(workplaceWorkerChoiceBox.getValue());
+			WorkplaceDAO.Update(listWorkPlaces.get(index));
+			workplacesTableView.refresh();
+		} catch (NumberFormatException e) {
+			Alert alert = new Alert(AlertType.INFORMATION);
+			alert.setTitle("");
+			alert.setHeaderText("Увага!");
+			alert.setContentText("Будь ласка, перевірте введені дані. Дані про обладнання не оновлено.");
+			alert.showAndWait();
+		}
+	}
+
+	@FXML
+	public void addWorkPlace() {
+		try {
+			Workplace wp = new Workplace(workplaceWorkerChoiceBox.getValue(), workplaceEquipmentChoiceBox.getValue(),
+					new Integer(workplaceMachineNoTextField.getText().trim()));
+			WorkplaceDAO.Add(wp);
+			listWorkPlaces.add(wp);
+			workplacesTableView.refresh();
+		} catch (NumberFormatException e) {
+			Alert alert = new Alert(AlertType.INFORMATION);
+			alert.setTitle("");
+			alert.setHeaderText("Увага!");
+			alert.setContentText("Будь ласка, перевірте введені дані. Дані про обладнання не оновлено.");
+			alert.showAndWait();
+		}
+	}
+	
+	@FXML
+	public void addProduct() {
+		try {
+			ProductSaver.setProduct(new Product());
+			ProductSaver.setUpdate(false);
+			Stage stage = new Stage();
+			AnchorPane root = (AnchorPane)FXMLLoader.load(getClass().getResource("/view/product.fxml"));
+			Scene scene = new Scene(root,800,580);
+			scene.getStylesheets().add(getClass().getResource("/view/application.css").toExternalForm());
+			stage.setScene(scene);
+			stage.resizableProperty().set(false);
+			stage.showAndWait();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@FXML
+	public void updateProduct() {
+		
+	}
+	
+	@FXML
+	public void deleteProduct() {
+		
+	}
+	
+	@FXML
+	public void productAddOperationSequence() {
+		try {
+			ProductSaver.setProduct(productTableView.getSelectionModel().getSelectedItem());
+			ProductSaver.setUpdate(true);
+			Stage stage = new Stage();
+			AnchorPane root = (AnchorPane)FXMLLoader.load(getClass().getResource("/view/product.fxml"));
+			Scene scene = new Scene(root,800,580);
+			scene.getStylesheets().add(getClass().getResource("/view/application.css").toExternalForm());
+			stage.setScene(scene);
+			stage.resizableProperty().set(false);
+			stage.showAndWait();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }

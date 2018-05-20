@@ -1,5 +1,7 @@
 package model.dao;
 
+import java.util.List;
+
 import org.hibernate.Session;
 
 import model.Workplace;
@@ -26,5 +28,14 @@ public class WorkplaceDAO {
 		session.beginTransaction();
 		session.delete(w);
 		session.getTransaction().commit();
+	}
+	
+	public static List<Workplace> selectAll(){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		session.beginTransaction();
+		@SuppressWarnings("unchecked")
+		List<Workplace> workplaces = session.createQuery("from Workplace").list();
+		session.getTransaction().commit();
+		return workplaces;
 	}
 }
