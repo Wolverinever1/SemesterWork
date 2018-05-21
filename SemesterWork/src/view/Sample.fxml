@@ -67,7 +67,15 @@
               <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <TreeTableView fx:id="OrdersTreeView" layoutX="8.0" layoutY="8.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                        <TreeTableView fx:id="OrdersTreeView" layoutX="8.0" layoutY="37.0" prefHeight="487.0" prefWidth="751.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="37.0">
+                           <contextMenu>
+                              <ContextMenu>
+                                <items>
+                                    <MenuItem mnemonicParsing="false" onAction="#updateOrder" text="Змінити" />
+                                </items>
+                              </ContextMenu>
+                           </contextMenu></TreeTableView>
+                        <CheckBox fx:id="currentOrdersCheckBox" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#currentOrdersCheckBox" text="Виводити незавершені замовлення" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="10.0" />
                      </children>
                   </AnchorPane>
               </content>
@@ -132,15 +140,15 @@
               <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <TableView fx:id="productTableView" layoutX="14.0" layoutY="82.0" prefHeight="442.0" prefWidth="751.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="82.0" />
+                        <TableView fx:id="productTableView" layoutX="14.0" layoutY="82.0" onMouseClicked="#productsOnMouseClicked" prefHeight="442.0" prefWidth="751.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="82.0" />
                         <TextField fx:id="productModelTextField" layoutX="65.0" layoutY="16.0" prefHeight="25.0" prefWidth="83.0" />
                         <Label layoutX="14.0" layoutY="20.0" text="Модель" />
                         <Label layoutX="160.0" layoutY="20.0" text="Назва" />
                         <TextField fx:id="productNameTextField" layoutX="203.0" layoutY="16.0" prefHeight="25.0" prefWidth="374.0" />
                         <Button layoutX="594.0" layoutY="16.0" mnemonicParsing="false" onAction="#productAddOperationSequence" prefHeight="25.0" prefWidth="142.0" text="Додати операції" />
-                        <Button layoutX="14.0" layoutY="48.0" mnemonicParsing="false" onAction="#addProduct" text="Додати продукцію" />
-                        <Button layoutX="151.0" layoutY="48.0" mnemonicParsing="false" onAction="#updateProduct" text="Оновити дані" />
-                        <Button layoutX="258.0" layoutY="48.0" mnemonicParsing="false" onAction="#deleteProduct" text="Видалити продукцію" />
+                        <Button layoutX="14.0" layoutY="48.0" minWidth="135.0" mnemonicParsing="false" onAction="#addProduct" text="Додати продукцію" />
+                        <Button layoutX="168.0" layoutY="48.0" minWidth="135.0" mnemonicParsing="false" onAction="#updateProduct" prefHeight="25.0" prefWidth="119.0" text="Оновити дані" />
+                        <Button layoutX="323.0" layoutY="48.0" minWidth="135.0" mnemonicParsing="false" onAction="#deleteProduct" text="Видалити продукцію" />
                      </children>
                   </AnchorPane>
               </content>
@@ -169,7 +177,7 @@
           </Menu>
             <Menu mnemonicParsing="false" text="Робота">
               <items>
-                <MenuItem mnemonicParsing="false" text="Додати замовлення" />
+                <MenuItem mnemonicParsing="false" onAction="#createOrder" text="Додати замовлення" />
               </items>
             </Menu>
         </menus>

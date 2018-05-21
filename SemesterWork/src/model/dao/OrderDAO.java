@@ -35,9 +35,27 @@ public class OrderDAO {
 		@SuppressWarnings("unchecked")
 		List<Object[]> result = session.createNativeQuery("select o.order_id, o.order_date, c.customer_name " + 
 				"from orders o inner join customer c where c.customer_id = o.customer_id").list();
-		System.out.println(result.size());
 		session.getTransaction().commit();
 		return result;
 	}
 	
+	public static List<Object[]> SelectActiveOrders(){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		session.beginTransaction();
+		@SuppressWarnings("unchecked")
+		List<Object[]> result = session.createNativeQuery("select o.order_id, o.order_date, c.customer_name " + 
+				"from orders o inner join customer c where c.customer_id = o.customer_id and o.is_done = 0").list();
+		session.getTransaction().commit();
+		return result;
+	}
+	
+	public static void DeleteWhere(String id) {
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		session.beginTransaction();
+		Order o = new Order();
+		System.out.println("must delete " + id);
+		o.setOrderId(new Integer(id));
+		session.delete(o);
+		session.getTransaction().commit();
+	}
 }

@@ -25,6 +25,6 @@
       <Button fx:id="addAll" layoutX="359.0" layoutY="260.0" mnemonicParsing="false" onAction="#addAllAction" prefHeight="25.0" prefWidth="83.0" text="&gt;&gt;" />
       <Button fx:id="removeSelected" layoutX="359.0" layoutY="295.0" mnemonicParsing="false" onAction="#removeSelectedAction" prefWidth="83.0" text="&lt;" />
       <Button fx:id="removeAll" layoutX="359.0" layoutY="330.0" mnemonicParsing="false" onAction="#removeAllAction" prefWidth="83.0" text="&lt;&lt;" />
-      <Button layoutX="660.0" layoutY="26.0" mnemonicParsing="false" onAction="#createProduct" prefHeight="25.0" prefWidth="126.0" text="Створити продукт " />
+      <Button layoutX="660.0" layoutY="26.0" mnemonicParsing="false" onAction="#createProduct" prefHeight="25.0" prefWidth="126.0" text="Зберегти" />
    </children>
 </AnchorPane>

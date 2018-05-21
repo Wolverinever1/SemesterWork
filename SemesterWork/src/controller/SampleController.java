@@ -20,6 +20,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListCell;
@@ -36,20 +37,20 @@ import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 import model.Customer;
-import model.Done_work;
 import model.Equipment;
 import model.Operation;
+import model.Order;
 import model.OrdersCustomerProducts;
 import model.Product;
 import model.ProductSaver;
 import model.Worker;
 import model.Workplace;
 import model.dao.CustomerDAO;
-import model.dao.DoneWorkDAO;
 import model.dao.EquipmentDAO;
 import model.dao.OperationDAO;
 import model.dao.OrderDAO;
@@ -168,6 +169,9 @@ public class SampleController implements Initializable {
 	ComboBox<Integer> eqIdComboBox;
 
 	@FXML
+	CheckBox currentOrdersCheckBox;
+
+	@FXML
 	TextField lNameField;
 	@FXML
 	TextField fNameField;
@@ -212,10 +216,8 @@ public class SampleController implements Initializable {
 		// ProductOperationsDAO.selectAll();
 		OrderProductsDAO.selectAll();
 
-		
-		List<Done_work> dw = DoneWorkDAO.selectAll();
-		System.out.println("stop");
-		dw.get(0).getWorker_id().getGrade();
+		// List<Done_work> dw = DoneWorkDAO.selectAll();
+		// dw.get(0).getWorker_id().getGrade();
 		gradeChoiseBox.getItems().addAll(1, 2, 3, 4, 5, 6);
 		operationGradeChoiseBox.getItems().addAll(1, 2, 3, 4, 5, 6);
 		workplaceEquipmentChoiceBox.getItems().addAll(EquipmentDAO.selectAll());
@@ -360,25 +362,7 @@ public class SampleController implements Initializable {
 				.setCellValueFactory(new TreeItemPropertyValueFactory<OrdersCustomerProducts, String>("productName"));
 		OrdersTreeView.getColumns().addAll(orderIdColumn, customerNameColumn, orderDateColumn, orderProductCountColumn,
 				orderProductModel, orderProductName);
-
-		TreeItem<OrdersCustomerProducts> root = new TreeItem<OrdersCustomerProducts>();
-		List<Object[]> orders = OrderDAO.SelectOrderInfo();
-		for (Object[] order : orders) {
-			TreeItem<OrdersCustomerProducts> rootChild = new TreeItem<OrdersCustomerProducts>(
-					new OrdersCustomerProducts(order[0].toString(), order[1].toString(), order[2].toString(), "", "",
-							""));
-			List<Object[]> products = OrderProductsDAO.SelectOrderProductInfo(new Integer(order[0].toString()));
-			for (Object[] product : products) {
-				TreeItem<OrdersCustomerProducts> child = new TreeItem<OrdersCustomerProducts>(
-						new OrdersCustomerProducts("", "", "", product[0].toString(), product[1].toString(),
-								product[2].toString()));
-				rootChild.getChildren().add(child);
-			}
-			root.getChildren().add(rootChild);
-		}
-		OrdersTreeView.setRoot(root);
-		OrdersTreeView.setShowRoot(false);
-
+		currentOrdersCheckBox();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -417,9 +401,12 @@ public class SampleController implements Initializable {
 		productName = new TableColumn<Product, String>("Назва");
 		productModel.setCellValueFactory(new PropertyValueFactory<>("model"));
 		productName.setCellValueFactory(new PropertyValueFactory<>("name"));
-		productTableView.getColumns().addAll(productModel,productName);
+		productTableView.getColumns().addAll(productModel, productName);
 		listProduct = FXCollections.observableArrayList(ProductDAO.selectAll());
 		productTableView.setItems(listProduct);
+		productTableView.getSelectionModel().select(0);
+		productModel.setPrefWidth(70);
+		productName.prefWidthProperty().bind(productTableView.widthProperty().subtract(70));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -561,7 +548,7 @@ public class SampleController implements Initializable {
 
 	@FXML
 	public void workplaceOnMouseClicked() {
-		Workplace wp= workplacesTableView.getSelectionModel().getSelectedItem();
+		Workplace wp = workplacesTableView.getSelectionModel().getSelectedItem();
 		workplaceEquipmentChoiceBox.setValue(wp.getEquipment_id());
 		workplaceMachineNoTextField.setText(new Integer(wp.getMachineNo()).toString());
 		workplaceWorkerChoiceBox.setValue(wp.getWorker_id());
@@ -569,9 +556,9 @@ public class SampleController implements Initializable {
 
 	@FXML
 	public void insertButtonAction() {
-		String fName = fNameField.getText();
-		String mName = mNameField.getText();
-		String lName = lNameField.getText();
+		String fName = fNameField.getText().trim();
+		String mName = mNameField.getText().trim();
+		String lName = lNameField.getText().trim();
 		int grade = gradeChoiseBox.getValue();
 		Worker w = new Worker(fName, mName, lName, grade);
 		WorkerDAO.Add(w);
@@ -581,9 +568,9 @@ public class SampleController implements Initializable {
 	@FXML
 	public void updateButtonAction() {
 		int index = workers.getSelectionModel().getSelectedIndex();
-		list.get(index).setfName(fNameField.getText());
-		list.get(index).setmName(mNameField.getText());
-		list.get(index).setlName(lNameField.getText());
+		list.get(index).setfName(fNameField.getText().trim());
+		list.get(index).setmName(mNameField.getText().trim());
+		list.get(index).setlName(lNameField.getText().trim());
 		list.get(index).setGrade(gradeChoiseBox.getValue());
 		WorkerDAO.Update(list.get(index));
 		workers.refresh();
@@ -602,6 +589,12 @@ public class SampleController implements Initializable {
 				(new Integer(workerWPlacesTableView.getSelectionModel().getSelectedItem().getMachineNo())).toString());
 		eqIdComboBox.setValue(
 				new Integer(workerWPlacesTableView.getSelectionModel().getSelectedItem().getEquipment_id().getId()));
+	}
+	
+	@FXML
+	public void productsOnMouseClicked() {
+		productModelTextField.setText(new Integer(productTableView.getSelectionModel().getSelectedItem().getModel()).toString());
+		productNameTextField.setText(productTableView.getSelectionModel().getSelectedItem().getName());
 	}
 
 	// public void AddWorkerOperationAction() {
@@ -645,7 +638,7 @@ public class SampleController implements Initializable {
 			Equipment e = EquipmentDAO.getEquipment(eqIdComboBox.getSelectionModel().getSelectedItem());
 			wp.setEquipment_id(e);
 			wp.setWorker_id(workers.getSelectionModel().getSelectedItem());
-			int machineNo = Integer.parseInt(machineNoField.getText());
+			int machineNo = Integer.parseInt(machineNoField.getText().trim());
 			wp.setMachineNo(new Integer(machineNo));
 			WorkplaceDAO.Add(wp);
 			listWorkPlaces.add(wp);
@@ -658,8 +651,8 @@ public class SampleController implements Initializable {
 
 	@FXML
 	public void insertCustomerButtonAction() {
-		Customer c = new Customer(0, customerNameTextArea.getText(), customerPhoneTextArea.getText().toCharArray(),
-				customerAddressTextArea.getText());
+		Customer c = new Customer(0, customerNameTextArea.getText().trim(), customerPhoneTextArea.getText().trim().toCharArray(),
+				customerAddressTextArea.getText().trim());
 		CustomerDAO.Add(c);
 		listCustomers.add(c);
 		customersTableView.refresh();
@@ -668,9 +661,9 @@ public class SampleController implements Initializable {
 	@FXML
 	public void updateCustomerButtonAction() {
 		int index = customersTableView.getSelectionModel().getSelectedIndex();
-		listCustomers.get(index).setAddress(customerAddressTextArea.getText());
-		listCustomers.get(index).setCustomerName(customerNameTextArea.getText());
-		listCustomers.get(index).setPhone(customerPhoneTextArea.getText().toCharArray());
+		listCustomers.get(index).setAddress(customerAddressTextArea.getText().trim());
+		listCustomers.get(index).setCustomerName(customerNameTextArea.getText().trim());
+		listCustomers.get(index).setPhone(customerPhoneTextArea.getText().trim().toCharArray());
 		CustomerDAO.Update(listCustomers.get(index));
 		customersTableView.refresh();
 	}
@@ -693,8 +686,8 @@ public class SampleController implements Initializable {
 	public void updateOperationButtonAction() {
 		int index = operationsTableView.getSelectionModel().getSelectedIndex();
 		try {
-			listOperations.get(index).setPrice(new BigDecimal(operationPriceTextField.getText()).setScale(4));
-			listOperations.get(index).setTime(new BigDecimal(operationTimeTextField.getText()).setScale(4));
+			listOperations.get(index).setPrice(new BigDecimal(operationPriceTextField.getText().trim()).setScale(4));
+			listOperations.get(index).setTime(new BigDecimal(operationTimeTextField.getText().trim()).setScale(4));
 			listOperations.get(index).setEquipment(EquipmentDAO.getEquipment(operationEquipmentChoiseBox.getValue()));
 			listOperations.get(index).setGrade(operationGradeChoiseBox.getValue());
 			listOperations.get(index).setName(operationNameTextField.getText().trim());
@@ -706,9 +699,9 @@ public class SampleController implements Initializable {
 					"Рекомендована точність 4 знаки після коми. Вами було введено більше 4-х знаків після коми. Значення буде округлено до меншого.");
 			alert.showAndWait();
 			listOperations.get(index)
-					.setPrice(new BigDecimal(operationPriceTextField.getText()).setScale(4, RoundingMode.DOWN));
+					.setPrice(new BigDecimal(operationPriceTextField.getText().trim()).setScale(4, RoundingMode.DOWN));
 			listOperations.get(index)
-					.setTime(new BigDecimal(operationTimeTextField.getText()).setScale(4, RoundingMode.DOWN));
+					.setTime(new BigDecimal(operationTimeTextField.getText().trim()).setScale(4, RoundingMode.DOWN));
 
 		} catch (NumberFormatException e1) {
 			Alert alert = new Alert(AlertType.INFORMATION);
@@ -725,8 +718,8 @@ public class SampleController implements Initializable {
 	@FXML
 	public void insertOperationButtonAction() {
 		Equipment e = EquipmentDAO.getEquipment(operationEquipmentChoiseBox.getValue());
-		Operation o = new Operation(0, new BigDecimal(operationPriceTextField.getText()),
-				new BigDecimal(operationTimeTextField.getText()), operationNameTextField.getText(),
+		Operation o = new Operation(0, new BigDecimal(operationPriceTextField.getText().trim()),
+				new BigDecimal(operationTimeTextField.getText().trim()), operationNameTextField.getText().trim(),
 				operationGradeChoiseBox.getValue(), e);
 		OperationDAO.Add(o);
 	}
@@ -734,8 +727,8 @@ public class SampleController implements Initializable {
 	@FXML
 	public void addEquipment() {
 		try {
-			Equipment e = new Equipment(new Integer(equipmentIdTextField.getText()),
-					equipmentDescriptionTextField.getText());
+			Equipment e = new Equipment(new Integer(equipmentIdTextField.getText().trim()),
+					equipmentDescriptionTextField.getText().trim());
 			EquipmentDAO.Add(e);
 			listEquipment.add(e);
 			equipmentTableView.refresh();
@@ -752,8 +745,8 @@ public class SampleController implements Initializable {
 	public void updateEquipment() {
 		try {
 			int index = equipmentTableView.getSelectionModel().getSelectedIndex();
-			listEquipment.get(index).setId(new Integer(equipmentIdTextField.getText()));
-			listEquipment.get(index).setDescription(equipmentDescriptionTextField.getText());
+			listEquipment.get(index).setId(new Integer(equipmentIdTextField.getText().trim()));
+			listEquipment.get(index).setDescription(equipmentDescriptionTextField.getText().trim());
 			EquipmentDAO.Update(listEquipment.get(index));
 			equipmentTableView.refresh();
 		} catch (NumberFormatException e) {
@@ -813,16 +806,17 @@ public class SampleController implements Initializable {
 			alert.showAndWait();
 		}
 	}
-	
+
 	@FXML
 	public void addProduct() {
 		try {
 			ProductSaver.setProduct(new Product());
 			ProductSaver.setUpdate(false);
 			Stage stage = new Stage();
-			AnchorPane root = (AnchorPane)FXMLLoader.load(getClass().getResource("/view/product.fxml"));
-			Scene scene = new Scene(root,800,580);
+			AnchorPane root = (AnchorPane) FXMLLoader.load(getClass().getResource("/view/product.fxml"));
+			Scene scene = new Scene(root, 800, 580);
 			scene.getStylesheets().add(getClass().getResource("/view/application.css").toExternalForm());
+			ProductController.setRefreshTables(x -> RefreshTable(x));
 			stage.setScene(scene);
 			stage.resizableProperty().set(false);
 			stage.showAndWait();
@@ -830,26 +824,123 @@ public class SampleController implements Initializable {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@FXML
 	public void updateProduct() {
-		
+		try {
+			productTableView.getSelectionModel().getSelectedItem().setModel(new Integer(productModelTextField.getText().trim()));
+			productTableView.getSelectionModel().getSelectedItem().setName(productNameTextField.getText().trim());
+			ProductDAO.Update(productTableView.getSelectionModel().getSelectedItem());
+			productTableView.refresh();
+		}catch(NumberFormatException e){
+			Alert alert = new Alert(AlertType.INFORMATION);
+			alert.setTitle("");
+			alert.setHeaderText("Увага!");
+			alert.setContentText("Будь ласка, перевірте введені дані. Дані про продукцію не оновлено. Значення моделі має бути унікальним, і містити лише цифри.");
+			alert.showAndWait();
+		}catch(Exception e1) {
+			
+		}
 	}
-	
+
 	@FXML
 	public void deleteProduct() {
-		
+		ProductDAO.Delete(productTableView.getSelectionModel().getSelectedItem());
+		listProduct.remove(productTableView.getSelectionModel().getSelectedItem());
+		productTableView.refresh();
 	}
-	
+
 	@FXML
 	public void productAddOperationSequence() {
 		try {
 			ProductSaver.setProduct(productTableView.getSelectionModel().getSelectedItem());
 			ProductSaver.setUpdate(true);
 			Stage stage = new Stage();
-			AnchorPane root = (AnchorPane)FXMLLoader.load(getClass().getResource("/view/product.fxml"));
-			Scene scene = new Scene(root,800,580);
+			AnchorPane root = (AnchorPane) FXMLLoader.load(getClass().getResource("/view/product.fxml"));
+			Scene scene = new Scene(root, 800, 580);
 			scene.getStylesheets().add(getClass().getResource("/view/application.css").toExternalForm());
+			ProductController.setRefreshTables(x -> RefreshTable(x));
+			stage.initModality(Modality.APPLICATION_MODAL);
+			stage.setScene(scene);
+			stage.resizableProperty().set(false);
+			stage.showAndWait();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@FXML
+	public void createOrder() {
+		try {
+			Stage stage = new Stage();
+			AnchorPane root = (AnchorPane) FXMLLoader.load(getClass().getResource("/view/Order.fxml"));
+			Scene scene = new Scene(root, 800, 580);
+			scene.getStylesheets().add(getClass().getResource("/view/application.css").toExternalForm());
+			OrderController.setRefreshTables(x -> RefreshTables(x));
+			stage.initModality(Modality.APPLICATION_MODAL);
+			stage.setScene(scene);
+			stage.resizableProperty().set(false);
+			stage.showAndWait();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@FXML
+	public void currentOrdersCheckBox() {
+		TreeItem<OrdersCustomerProducts> root = new TreeItem<OrdersCustomerProducts>();
+		List<Object[]> orders;
+		if (currentOrdersCheckBox.isSelected()) {
+			orders = OrderDAO.SelectActiveOrders();
+		} else {
+			orders = OrderDAO.SelectOrderInfo();
+		}
+		for (Object[] order : orders) {
+			TreeItem<OrdersCustomerProducts> rootChild = new TreeItem<OrdersCustomerProducts>(
+					new OrdersCustomerProducts(order[0].toString(), order[1].toString(), order[2].toString(), "", "",
+							""));
+			List<Object[]> products = OrderProductsDAO.SelectOrderProductInfo(new Integer(order[0].toString()));
+			for (Object[] product : products) {
+				TreeItem<OrdersCustomerProducts> child = new TreeItem<OrdersCustomerProducts>(
+						new OrdersCustomerProducts("", "", "", product[0].toString(), product[1].toString(),
+								product[2].toString()));
+				rootChild.getChildren().add(child);
+			}
+			root.getChildren().add(rootChild);
+		}
+		OrdersTreeView.setRoot(root);
+		OrdersTreeView.setShowRoot(false);
+	}
+
+	public boolean RefreshTables(Order o) {
+		currentOrdersCheckBox();
+		return false;
+	}
+
+	public boolean RefreshTable(Product p) {
+		listProduct.add(p);
+		productTableView.refresh();
+		return false;
+	}
+	
+
+//	@FXML
+//	public void deleteOrder(){
+//		OrderDAO.DeleteWhere(OrdersTreeView.getSelectionModel().getSelectedItem().getValue().getOrderId());
+//		OrdersTreeView.getTreeItem(OrdersTreeView.getSelectionModel().getSelectedIndex());
+//		OrdersTreeView.getRoot().getChildren().remove(OrdersTreeView.getSelectionModel().getSelectedItem());
+//		OrdersTreeView.refresh();
+//	}
+	
+	@FXML
+	public void updateOrder(){
+		try {
+			Stage stage = new Stage();
+			AnchorPane root = (AnchorPane) FXMLLoader.load(getClass().getResource("/view/Order.fxml"));
+			Scene scene = new Scene(root, 800, 580);
+			scene.getStylesheets().add(getClass().getResource("/view/application.css").toExternalForm());
+			OrderController.setRefreshTables(x -> RefreshTables(x));
+			stage.initModality(Modality.APPLICATION_MODAL);
 			stage.setScene(scene);
 			stage.resizableProperty().set(false);
 			stage.showAndWait();

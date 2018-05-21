@@ -4,7 +4,9 @@ import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.function.Function;
 
+import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -18,6 +20,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.TableColumn.CellDataFeatures;
+import javafx.stage.Stage;
 import javafx.util.Callback;
 import model.Operation;
 import model.Pr_op_sequence;
@@ -49,10 +52,17 @@ public class ProductController implements Initializable {
 	TextField productModelTextField;
 	@FXML
 	TextField productNameTextField;
-	private Product product;
 
+	private Product product;
 	ObservableList<Operation> listAll;
 	ObservableList<Operation> listSelected;
+	
+	private static Function<Product, Boolean> RefreshTables;
+
+	public static void setRefreshTables(Function<Product, Boolean> refreshTables) {
+		System.out.println("Initialize");
+		RefreshTables = refreshTables;
+	}
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -102,7 +112,7 @@ public class ProductController implements Initializable {
 		selectedOperationsTable.getSelectionModel().select(0);
 
 	}
-
+	
 	@FXML
 	public void addSelectedAction() {
 		ObservableList<Operation> selectedOp = allOperationsTable.getSelectionModel().getSelectedItems();
@@ -186,7 +196,20 @@ public class ProductController implements Initializable {
 				operations.add(op);
 			}
 //			product.setOperations(operations);
+			Platform.runLater(new Runnable() {
+				
+				@Override
+				public void run() {
+					RefreshTables.apply(product);
+				}
+			});
 			ProductDAO.Update(product);
+			Alert alert = new Alert(AlertType.INFORMATION);
+			alert.setTitle("");
+			alert.setContentText("Модель успішно додано.");
+			alert.showAndWait();
+			Stage stage = (Stage)allOperationsTable.getScene().getWindow();
+			stage.close();
 		} catch (NumberFormatException e) {
 			Alert alert = new Alert(AlertType.INFORMATION);
 			alert.setTitle("");
