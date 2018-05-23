@@ -38,12 +38,12 @@ public class Order_product implements Serializable {
 	}
 
 	@Transient
-	public Order getOrder_id() {
-		return getPrimaryKey().getOrder_id();
+	public Order getOrder() {
+		return getPrimaryKey().getOrder();
 	}
 
 	public void setOrder(Order order) {
-		getPrimaryKey().setOrder_id(order);
+		getPrimaryKey().setOrder(order);
 	}
 
 	@Transient

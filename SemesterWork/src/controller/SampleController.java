@@ -212,11 +212,9 @@ public class SampleController implements Initializable {
 
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
-		// WorkplaceDAO.selectAll();
 		// ProductOperationsDAO.selectAll();
-		OrderProductsDAO.selectAll();
+		// OrderProductsDAO.selectAll();
 
-		// List<Done_work> dw = DoneWorkDAO.selectAll();
 		// dw.get(0).getWorker_id().getGrade();
 		gradeChoiseBox.getItems().addAll(1, 2, 3, 4, 5, 6);
 		operationGradeChoiseBox.getItems().addAll(1, 2, 3, 4, 5, 6);
@@ -590,10 +588,11 @@ public class SampleController implements Initializable {
 		eqIdComboBox.setValue(
 				new Integer(workerWPlacesTableView.getSelectionModel().getSelectedItem().getEquipment_id().getId()));
 	}
-	
+
 	@FXML
 	public void productsOnMouseClicked() {
-		productModelTextField.setText(new Integer(productTableView.getSelectionModel().getSelectedItem().getModel()).toString());
+		productModelTextField
+				.setText(new Integer(productTableView.getSelectionModel().getSelectedItem().getModel()).toString());
 		productNameTextField.setText(productTableView.getSelectionModel().getSelectedItem().getName());
 	}
 
@@ -645,14 +644,14 @@ public class SampleController implements Initializable {
 		} catch (NumberFormatException e) {
 			Alert alert = new Alert(AlertType.INFORMATION);
 			alert.setContentText("Перевірте введені данні");
-
+			alert.showAndWait();
 		}
 	}
 
 	@FXML
 	public void insertCustomerButtonAction() {
-		Customer c = new Customer(0, customerNameTextArea.getText().trim(), customerPhoneTextArea.getText().trim().toCharArray(),
-				customerAddressTextArea.getText().trim());
+		Customer c = new Customer(0, customerNameTextArea.getText().trim(),
+				customerPhoneTextArea.getText().trim().toCharArray(), customerAddressTextArea.getText().trim());
 		CustomerDAO.Add(c);
 		listCustomers.add(c);
 		customersTableView.refresh();
@@ -793,8 +792,18 @@ public class SampleController implements Initializable {
 	@FXML
 	public void addWorkPlace() {
 		try {
-			Workplace wp = new Workplace(workplaceWorkerChoiceBox.getValue(), workplaceEquipmentChoiceBox.getValue(),
-					new Integer(workplaceMachineNoTextField.getText().trim()));
+			Integer machineNo = new Integer(workplaceMachineNoTextField.getText().trim());
+			for(Workplace w:listWorkPlaces) {
+				if(w.getMachineNo() == machineNo.intValue()) {
+					Alert alert = new Alert(AlertType.ERROR);
+					alert.setTitle("");
+					alert.setHeaderText("Увага!");
+					alert.setContentText("Машинка під таким номером вже існує. Будь ласка, введіть інший номер");
+					alert.showAndWait();
+					return;
+				}
+			}
+			Workplace wp = new Workplace(workplaceWorkerChoiceBox.getValue(), workplaceEquipmentChoiceBox.getValue(), machineNo	);
 			WorkplaceDAO.Add(wp);
 			listWorkPlaces.add(wp);
 			workplacesTableView.refresh();
@@ -810,7 +819,7 @@ public class SampleController implements Initializable {
 	@FXML
 	public void addProduct() {
 		try {
-			ProductSaver.setProduct(new Product());
+			// ProductSaver.setProduct();
 			ProductSaver.setUpdate(false);
 			Stage stage = new Stage();
 			AnchorPane root = (AnchorPane) FXMLLoader.load(getClass().getResource("/view/product.fxml"));
@@ -828,18 +837,20 @@ public class SampleController implements Initializable {
 	@FXML
 	public void updateProduct() {
 		try {
-			productTableView.getSelectionModel().getSelectedItem().setModel(new Integer(productModelTextField.getText().trim()));
+			productTableView.getSelectionModel().getSelectedItem()
+					.setModel(new Integer(productModelTextField.getText().trim()));
 			productTableView.getSelectionModel().getSelectedItem().setName(productNameTextField.getText().trim());
 			ProductDAO.Update(productTableView.getSelectionModel().getSelectedItem());
 			productTableView.refresh();
-		}catch(NumberFormatException e){
+		} catch (NumberFormatException e) {
 			Alert alert = new Alert(AlertType.INFORMATION);
 			alert.setTitle("");
 			alert.setHeaderText("Увага!");
-			alert.setContentText("Будь ласка, перевірте введені дані. Дані про продукцію не оновлено. Значення моделі має бути унікальним, і містити лише цифри.");
+			alert.setContentText(
+					"Будь ласка, перевірте введені дані. Дані про продукцію не оновлено. Значення моделі має бути унікальним, і містити лише цифри.");
 			alert.showAndWait();
-		}catch(Exception e1) {
-			
+		} catch (Exception e1) {
+
 		}
 	}
 
@@ -922,24 +933,28 @@ public class SampleController implements Initializable {
 		productTableView.refresh();
 		return false;
 	}
-	
 
-//	@FXML
-//	public void deleteOrder(){
-//		OrderDAO.DeleteWhere(OrdersTreeView.getSelectionModel().getSelectedItem().getValue().getOrderId());
-//		OrdersTreeView.getTreeItem(OrdersTreeView.getSelectionModel().getSelectedIndex());
-//		OrdersTreeView.getRoot().getChildren().remove(OrdersTreeView.getSelectionModel().getSelectedItem());
-//		OrdersTreeView.refresh();
-//	}
-	
+	// @FXML
+	// public void deleteOrder(){
+	// OrderDAO.DeleteWhere(OrdersTreeView.getSelectionModel().getSelectedItem().getValue().getOrderId());
+	// OrdersTreeView.getTreeItem(OrdersTreeView.getSelectionModel().getSelectedIndex());
+	// OrdersTreeView.getRoot().getChildren().remove(OrdersTreeView.getSelectionModel().getSelectedItem());
+	// OrdersTreeView.refresh();
+	// }
+
 	@FXML
-	public void updateOrder(){
+	public void updateDoneWork() {
 		try {
 			Stage stage = new Stage();
-			AnchorPane root = (AnchorPane) FXMLLoader.load(getClass().getResource("/view/Order.fxml"));
+			AnchorPane root = (AnchorPane) FXMLLoader.load(getClass().getResource("/view/Done_work.fxml"));
 			Scene scene = new Scene(root, 800, 580);
 			scene.getStylesheets().add(getClass().getResource("/view/application.css").toExternalForm());
-			OrderController.setRefreshTables(x -> RefreshTables(x));
+			// OrderController.setRefreshTables(x -> RefreshTables(x));
+			TreeItem<OrdersCustomerProducts> item = OrdersTreeView.getSelectionModel().getSelectedItem();
+			System.out.println(
+					"=>" + item.getParent().getValue().getOrderId() + "<=>" + item.getValue().getModel() + "<=");
+			DoneWorkController.setOrder_id(item.getParent().getValue().getOrderId());
+			DoneWorkController.setModel(item.getValue().getModel());
 			stage.initModality(Modality.APPLICATION_MODAL);
 			stage.setScene(scene);
 			stage.resizableProperty().set(false);

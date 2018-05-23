@@ -71,7 +71,7 @@
                            <contextMenu>
                               <ContextMenu>
                                 <items>
-                                    <MenuItem mnemonicParsing="false" onAction="#updateOrder" text="Змінити" />
+                                    <MenuItem mnemonicParsing="false" onAction="#updateDoneWork" text="Змінити" />
                                 </items>
                               </ContextMenu>
                            </contextMenu></TreeTableView>

@@ -37,5 +37,14 @@ public class OperationDAO {
 		session.getTransaction().commit();
 		return operations;
 	}
+	
+	public static List<Object[]> Info(int id) {
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		session.beginTransaction();
+		@SuppressWarnings("unchecked")
+		List<Object[]> done = session.createNativeQuery("select o.`Equipment_id`, o.`op_grade`, o.`time` from `operation` o where o.`operation_id` = "+id+";").list();
+		session.getTransaction().commit();
+		return done;
+	}
 
 }

@@ -17,7 +17,7 @@ public class Order implements Serializable{
 	@GenericGenerator(strategy = "increment", name = "increment")
 	@GeneratedValue(generator = "increment")
 	@Column(name="order_id")
-	private int orderId;
+	private int order_id;
 	@Column(name="order_date")
 	private Date orderDate;
 	@ManyToOne
@@ -27,7 +27,7 @@ public class Order implements Serializable{
 	private boolean is_done;
 	
 	public Order(int orderId, Date orderDate, Customer customer) {
-		this.orderId = orderId;
+		this.order_id = orderId;
 		this.orderDate = orderDate;
 		this.customer = customer;
 	}
@@ -38,7 +38,7 @@ public class Order implements Serializable{
 //	private Set<Order_product> products = new HashSet<>();
 	
 	public Order(int orderId, Date orderDate, Customer customer, Set<Order_product> products) {
-		this.orderId = orderId;
+		this.order_id = orderId;
 		this.orderDate = orderDate;
 		this.customer = customer;
 //		this.products = products;
@@ -49,12 +49,12 @@ public class Order implements Serializable{
 		// TODO Auto-generated constructor stub
 	}
 
-	public int getOrderId() {
-		return orderId;
+	public int getOrder_id() {
+		return order_id;
 	}
 
-	public void setOrderId(int orderId) {
-		this.orderId = orderId;
+	public void setOrder_id(int orderId) {
+		this.order_id = orderId;
 	}
 
 	public Date getOrderDate() {

@@ -15,6 +15,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -56,11 +57,10 @@ public class ProductController implements Initializable {
 	private Product product;
 	ObservableList<Operation> listAll;
 	ObservableList<Operation> listSelected;
-	
+
 	private static Function<Product, Boolean> RefreshTables;
 
 	public static void setRefreshTables(Function<Product, Boolean> refreshTables) {
-		System.out.println("Initialize");
 		RefreshTables = refreshTables;
 	}
 
@@ -90,21 +90,24 @@ public class ProductController implements Initializable {
 		operationsAllColumn.prefWidthProperty().bind(allOperationsTable.widthProperty());
 		operationsSelectedColumn.prefWidthProperty().bind(selectedOperationsTable.widthProperty());
 		product = ProductSaver.getProduct();
-		productModelTextField.setText(new Integer(product.getModel()).toString());
-		productNameTextField.setText(product.getName());
-		List<Pr_op_sequence> operations = ProductOperationsDAO.selectOperationSequense(product);
 		listAll = FXCollections.observableArrayList(OperationDAO.selectAll());
 		listSelected = FXCollections.observableArrayList();
-		for (int i = 0; i < operations.size(); i++)
-			listSelected.add(operations.get(i).getOperation());
-		if(operations.isEmpty()) {
-			removeSelected.setDisable(true);
-			removeAll.setDisable(true);
+		if (product != null) {
+			productModelTextField.setText(new Integer(product.getModel()).toString());
+			productModelTextField.setEditable(false);
+			productNameTextField.setText(product.getName());
+			List<Pr_op_sequence> operations = ProductOperationsDAO.selectOperationSequense(new Integer(product.getModel()).toString());
+			for (int i = 0; i < operations.size(); i++)
+				listSelected.add(operations.get(i).getOperation());
+			if (operations.isEmpty()) {
+				removeSelected.setDisable(true);
+				removeAll.setDisable(true);
+			}
+			listAll.removeAll(listSelected);
 		}
-		listAll.removeAll(listSelected);
 		allOperationsTable.setItems(listAll);
 		selectedOperationsTable.setItems(listSelected);
-		if(listAll.isEmpty()) {
+		if (listAll.isEmpty()) {
 			addSelected.setDisable(true);
 			addAll.setDisable(true);
 		}
@@ -112,7 +115,7 @@ public class ProductController implements Initializable {
 		selectedOperationsTable.getSelectionModel().select(0);
 
 	}
-	
+
 	@FXML
 	public void addSelectedAction() {
 		ObservableList<Operation> selectedOp = allOperationsTable.getSelectionModel().getSelectedItems();
@@ -145,76 +148,124 @@ public class ProductController implements Initializable {
 
 	@FXML
 	public void removeSelectedAction() {
-		ObservableList<Operation> selectedOp = selectedOperationsTable.getSelectionModel().getSelectedItems();
-		listAll.removeAll(selectedOp);
-		listAll.addAll(selectedOp);
-		listSelected.removeAll(selectedOp);
-		allOperationsTable.refresh();
-		selectedOperationsTable.refresh();
-		if (addSelected.isDisable()) {
-			addSelected.setDisable(false);
-			addAll.setDisable(false);
-		}
-		if (listSelected.size() == 0) {
-			removeSelected.setDisable(true);
-			removeAll.setDisable(true);
+		if (product != null) {
+			Alert alert = new Alert(AlertType.NONE);
+			alert.setTitle("");
+			alert.setContentText(
+					"При видаленні даної операції зі списку, дані про виконання цієї операції працівниками будуть видалені. Ви дійсно бажаєте продовжити?");
+			ButtonType yes = new ButtonType("Так");
+			ButtonType no = new ButtonType("Ні");
+			alert.getButtonTypes().add(yes);
+			alert.getButtonTypes().add(no);
+			alert.showAndWait().ifPresent(response -> {
+				if (response == yes) {
+					ObservableList<Operation> selectedOp = selectedOperationsTable.getSelectionModel()
+							.getSelectedItems();
+					listAll.removeAll(selectedOp);
+					listAll.addAll(selectedOp);
+					listSelected.removeAll(selectedOp);
+					allOperationsTable.refresh();
+					selectedOperationsTable.refresh();
+					if (addSelected.isDisable()) {
+						addSelected.setDisable(false);
+						addAll.setDisable(false);
+					}
+					if (listSelected.size() == 0) {
+						removeSelected.setDisable(true);
+						removeAll.setDisable(true);
+					}
+				}
+			});
 		}
 	}
 
 	@FXML
 	public void removeAllAction() {
-		listAll.removeAll(listSelected);
-		listAll.addAll(listSelected);
-		listSelected.removeAll(listSelected);
-		allOperationsTable.refresh();
-		selectedOperationsTable.refresh();
-		addSelected.setDisable(false);
-		addAll.setDisable(false);
-		removeSelected.setDisable(true);
-		removeAll.setDisable(true);
-		allOperationsTable.getSelectionModel().select(0);
+		if (product != null) {
+			Alert alert = new Alert(AlertType.NONE);
+			alert.setTitle("");
+			alert.setContentText(
+					"При видаленні даних операцій зі списку, дані про виконання цих операцій працівниками будуть видалені. Ви дійсно бажаєте продовжити?");
+			ButtonType yes = new ButtonType("Так");
+			ButtonType no = new ButtonType("Ні");
+			alert.getButtonTypes().add(yes);
+			alert.getButtonTypes().add(no);
+			alert.showAndWait().ifPresent(response -> {
+				if (response == yes) {
+					listAll.removeAll(listSelected);
+					listAll.addAll(listSelected);
+					listSelected.removeAll(listSelected);
+					allOperationsTable.refresh();
+					selectedOperationsTable.refresh();
+					addSelected.setDisable(false);
+					addAll.setDisable(false);
+					removeSelected.setDisable(true);
+					removeAll.setDisable(true);
+					allOperationsTable.getSelectionModel().select(0);
+				}
+			});
+		}
 	}
 
 	@FXML
 	public void createProduct() {
 		try {
-			product.setModel(new Integer(productModelTextField.getText().trim()));
-			product.setName(productNameTextField.getText().trim());
-			for (Pr_op_sequence operation : ProductOperationsDAO.selectOperationSequense(product)) {
-				ProductOperationsDAO.Delete(operation);
+			boolean needRefresh = false;
+			if (product == null) {
+				needRefresh = true;
+				product = new Product();
+				Integer model = new Integer(productModelTextField.getText().trim());
+				if (model.intValue() < 0)
+					throw new NumberFormatException();
+				product.setModel(model);
+				product.setName(productNameTextField.getText().trim());
+				ProductDAO.Add(product);
+			} else {
+				product.setName(productNameTextField.getText().trim());
+				ProductDAO.Update(product);
+			}
+			LinkedList<Pr_op_sequence> existOperations = new LinkedList<>();
+			for (Pr_op_sequence operation : ProductOperationsDAO.selectOperationSequense(new Integer(product.getModel()).toString())) {
+				existOperations.add(operation);
 			}
 			List<Pr_op_sequence> operations = new LinkedList<>();
-			if (!ProductSaver.isUpdate()) {
-				ProductDAO.Add(product);
-			}
 			for (Operation operation : listSelected) {
 				Pr_op_sequence op = new Pr_op_sequence();
 				op.setModel(product);
 				op.setOperation(operation);
 				op.setNumber(listSelected.indexOf(operation) + 1);
-				ProductOperationsDAO.Add(op);
+				if (existOperations.contains(op)) {
+					ProductOperationsDAO.Update(op);
+				} else {
+					ProductOperationsDAO.Add(op);
+				}
 				operations.add(op);
 			}
-//			product.setOperations(operations);
-			Platform.runLater(new Runnable() {
-				
-				@Override
-				public void run() {
-					RefreshTables.apply(product);
+			for(Pr_op_sequence op:existOperations) {
+				if(!operations.contains(op)) {
+					ProductOperationsDAO.Delete(op);
 				}
-			});
-			ProductDAO.Update(product);
+			}
+			if (needRefresh) {
+				Platform.runLater(new Runnable() {
+
+					@Override
+					public void run() {
+						RefreshTables.apply(product);
+					}
+				});
+			}
 			Alert alert = new Alert(AlertType.INFORMATION);
 			alert.setTitle("");
-			alert.setContentText("Модель успішно додано.");
+			alert.setContentText("Дані успішно додано.");
 			alert.showAndWait();
-			Stage stage = (Stage)allOperationsTable.getScene().getWindow();
+			Stage stage = (Stage) allOperationsTable.getScene().getWindow();
 			stage.close();
 		} catch (NumberFormatException e) {
 			Alert alert = new Alert(AlertType.INFORMATION);
 			alert.setTitle("");
 			alert.setHeaderText("Увага!");
-			alert.setContentText("Будь ласка, перевірте введені дані. Дані про обладнання не оновлено.");
+			alert.setContentText("Будь ласка, перевірте введені дані. Номер продукції може містити лише цифри.");
 			alert.showAndWait();
 		}
 	}

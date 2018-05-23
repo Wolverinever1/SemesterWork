@@ -11,14 +11,14 @@ import model.Product;
 public class OrderProductId implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
-	private Order order_id;
+	private Order order;
 	private Product model;
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((order_id == null) ? 0 : order_id.hashCode());
+		result = prime * result + ((order == null) ? 0 : order.hashCode());
 		result = prime * result + ((model == null) ? 0 : model.hashCode());
 		return result;
 	}
@@ -31,10 +31,10 @@ public class OrderProductId implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		OrderProductId other = (OrderProductId) obj;
-		if (order_id == null) {
-			if (other.order_id != null)
+		if (order == null) {
+			if (other.order != null)
 				return false;
-		} else if (!order_id.equals(other.order_id))
+		} else if (!order.equals(other.order))
 			return false;
 		if (model == null) {
 			if (other.model != null)
@@ -51,16 +51,16 @@ public class OrderProductId implements Serializable {
 	
 	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "order_id")
-	public Order getOrder_id() {
-		return order_id;
+	public Order getOrder() {
+		return order;
 	}
 
-	public void setOrder_id(Order order) {
-		this.order_id = order;
+	public void setOrder(Order order) {
+		this.order = order;
 	}
 	
 	@ManyToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name="model", insertable = false,updatable=false)
+	@JoinColumn(name="model")
 	public Product getModel() {
 		return model;
 	}

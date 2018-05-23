@@ -53,8 +53,7 @@ public class OrderDAO {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		session.beginTransaction();
 		Order o = new Order();
-		System.out.println("must delete " + id);
-		o.setOrderId(new Integer(id));
+		o.setOrder_id(new Integer(id));
 		session.delete(o);
 		session.getTransaction().commit();
 	}

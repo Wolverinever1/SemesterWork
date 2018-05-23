@@ -49,6 +49,15 @@ public class WorkerDAO {
 		return workers;
 	}
 	
+	@SuppressWarnings("unchecked")
+	public static List<Worker> selectAllOrderByGrade(){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		session.beginTransaction();
+		List<Worker> workers = session.createQuery("from Worker order by grade").list();
+		session.getTransaction().commit();
+		return workers;
+	}
+	
 	public static Worker getWorker(int id) {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		session.beginTransaction();

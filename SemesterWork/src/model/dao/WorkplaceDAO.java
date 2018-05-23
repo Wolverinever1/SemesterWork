@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.hibernate.Session;
 
+import model.Worker;
 import model.Workplace;
 import model.resources.HibernateUtil;
 
@@ -35,6 +36,15 @@ public class WorkplaceDAO {
 		session.beginTransaction();
 		@SuppressWarnings("unchecked")
 		List<Workplace> workplaces = session.createQuery("from Workplace").list();
+		session.getTransaction().commit();
+		return workplaces;
+	}
+	
+	public static List<Workplace> selectEquipmentId(Worker w){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		session.beginTransaction();
+		@SuppressWarnings("unchecked")
+		List<Workplace> workplaces = session.createQuery("from Workplace where primaryKey.worker_id ="+w.getWorker_id()).list();
 		session.getTransaction().commit();
 		return workplaces;
 	}

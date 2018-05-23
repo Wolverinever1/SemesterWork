@@ -4,8 +4,8 @@ import java.io.Serializable;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
+import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-
 
 import model.Equipment;
 import model.Worker;
@@ -16,6 +16,7 @@ public class WorkplaceId implements Serializable{
 	private static final long serialVersionUID = -7547386438633365107L;
 	private Equipment equipment_id;
 	private Worker worker_id;
+	@Id
 	private int machineNo;
 	
 	public WorkplaceId() {

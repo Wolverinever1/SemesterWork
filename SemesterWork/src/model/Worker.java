@@ -1,7 +1,6 @@
 package model;
 
 import java.io.Serializable;
-import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.*;
@@ -33,9 +32,9 @@ public class Worker implements Serializable {
 //	@OneToMany
 //	@JoinColumn(name = "worker_id")
 //	private Set<Done_work> doneWork = new HashSet<>();
-	@OneToMany
-	@JoinColumn(name = "worker_id")
-	private Set<Workplace> workplaces = new HashSet<>();
+//	@OneToMany
+//	@JoinColumn(name = "worker_id")
+//	private Set<Workplace> workplaces = new HashSet<>();
 
 	@Override
 	public int hashCode() {
@@ -47,7 +46,7 @@ public class Worker implements Serializable {
 		result = prime * result + ((lName == null) ? 0 : lName.hashCode());
 		result = prime * result + ((mName == null) ? 0 : mName.hashCode());
 		result = prime * result + worker_id;
-		result = prime * result + ((workplaces == null) ? 0 : workplaces.hashCode());
+//		result = prime * result + ((workplaces == null) ? 0 : workplaces.hashCode());
 		return result;
 	}
 
@@ -100,11 +99,11 @@ public class Worker implements Serializable {
 			return false;
 		if (worker_id != other.worker_id)
 			return false;
-		if (workplaces == null) {
-			if (other.workplaces != null)
-				return false;
-		} else if (!workplaces.equals(other.workplaces))
-			return false;
+//		if (workplaces == null) {
+//			if (other.workplaces != null)
+//				return false;
+//		} else if (!workplaces.equals(other.workplaces))
+//			return false;
 		return true;
 	}
 
@@ -121,7 +120,7 @@ public class Worker implements Serializable {
 		this.lName = lName;
 		this.grade = grade;
 //		this.doneWork = doneWork;
-		this.workplaces = workplaces;
+//		this.workplaces = workplaces;
 	}
 
 	public Worker() {
@@ -185,12 +184,12 @@ public class Worker implements Serializable {
 //		this.doneWork = doneWork;
 //	}
 
-	public Set<Workplace> getWorkplaces() {
-		return workplaces;
-	}
-
-	public void setWorkplaces(Set<Workplace> workplaces) {
-		this.workplaces = workplaces;
-	}
+//	public Set<Workplace> getWorkplaces() {
+//		return workplaces;
+//	}
+//
+//	public void setWorkplaces(Set<Workplace> workplaces) {
+//		this.workplaces = workplaces;
+//	}
 
 }

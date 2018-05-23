@@ -284,5 +284,5 @@ public class OrderController implements Initializable {
 	public void selectCustomer() {
 		customerField.setText(customersTable.getSelectionModel().getSelectedItem().getCustomerName());
 	}
-
+	
 }
