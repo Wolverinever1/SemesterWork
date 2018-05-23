@@ -53,6 +53,7 @@ public class DoneWorkController implements Initializable {
 	TableColumn<Done_work, Integer> columnCount;
 
 	private ObservableList<Done_work> listDoneWork;
+	
 	private static String order_id;
 	private static String model;
 
@@ -143,7 +144,7 @@ public class DoneWorkController implements Initializable {
 
 	}
 
-	protected class OperationWrapper {
+	public class OperationWrapper {
 		private int order_id;
 		private int model;
 		private int operation_id;
@@ -226,13 +227,14 @@ public class DoneWorkController implements Initializable {
 		private BigDecimal busyTime;
 		private int grade;
 
-		public WorkerWrapper(Worker worker) {
+		public WorkerWrapper(Worker worker, List<OperationWrapper> active) {
 			id = worker.getWorker_id();
 			grade = worker.getGrade();
 			for (Workplace wp : WorkplaceDAO.selectEquipmentId(worker)) {
 				equipment.add(wp.getEquipment_id().getId());
 			}
-			busyTime = new BigDecimal("0.0");
+			busyTime =WorkerDAO.getBusyTime(active, id);
+			System.out.println(id+ " = >>" + busyTime);
 		}
 
 		public Set<Integer> getEquipment() {
@@ -294,7 +296,7 @@ public class DoneWorkController implements Initializable {
 		List<WorkerWrapper> workers = new LinkedList<>();
 		List<Worker> workersInfo = WorkerDAO.selectAllOrderByGrade();
 		for (Worker w : workersInfo) {
-			WorkerWrapper wrapper = new WorkerWrapper(w);
+			WorkerWrapper wrapper = new WorkerWrapper(w, active);
 			workers.add(wrapper);
 		}
 		for (int i = 0; i < allOperations.size(); i++) {
