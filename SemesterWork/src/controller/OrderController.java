@@ -106,7 +106,7 @@ public class OrderController implements Initializable {
 	TableColumn<Wrapper, Button> removeProductSelectedColumn;
 	@FXML
 	TableColumn<Wrapper, String> productSelectedIdColumn;
-	
+
 	private static Function<Order, Boolean> RefreshTables;
 
 	public static void setRefreshTables(Function<Order, Boolean> refreshTables) {
@@ -241,36 +241,42 @@ public class OrderController implements Initializable {
 	@FXML
 	public void addOrder(ActionEvent e) {
 		try {
-			Order o = new Order();
-			o.setCustomer(customersTable.getSelectionModel().getSelectedItem());
-			o.setOrderDate(Date.valueOf(date.getValue()));
-			Set<Order_product> products = new HashSet<>();
-			for (Wrapper wrapper : listSelectedProduct) {
-				Order_product op = new Order_product();
-				Integer count = new Integer(wrapper.getField().getText());
-				if (count.intValue() <= 0)
-					throw new NumberFormatException();
-				op.setCount(count);
-				op.setModel(wrapper.getProduct());
-				op.setOrder(o);
-				products.add(op);
-			}
-			OrderDAO.Add(o);
-			products.forEach(x ->OrderProductsDAO.Add(x));
-//			o.setProducts(products);
-			Platform.runLater(new Runnable() {
-
-				@Override
-				public void run() {
-					RefreshTables.apply(o);
+			if (listSelectedProduct.size() == 0) {
+				Alert alert = new Alert(AlertType.INFORMATION);
+				alert.setTitle("");
+				alert.setContentText("Ви не додали товари до замовлення.");
+				alert.showAndWait();
+			} else {
+				Order o = new Order();
+				o.setCustomer(customersTable.getSelectionModel().getSelectedItem());
+				o.setOrderDate(Date.valueOf(date.getValue()));
+				Set<Order_product> products = new HashSet<>();
+				for (Wrapper wrapper : listSelectedProduct) {
+					Order_product op = new Order_product();
+					Integer count = new Integer(wrapper.getField().getText());
+					if (count.intValue() <= 0)
+						throw new NumberFormatException();
+					op.setCount(count);
+					op.setModel(wrapper.getProduct());
+					op.setOrder(o);
+					products.add(op);
 				}
-			});
-			Alert alert = new Alert(AlertType.INFORMATION);
-			alert.setTitle("");
-			alert.setContentText("Замовлення успішно додано.");
-			alert.showAndWait();
-			Stage stage = (Stage)orderProductsTable.getScene().getWindow();
-			stage.close();
+				OrderDAO.Add(o);
+				products.forEach(x -> OrderProductsDAO.Add(x));
+				Platform.runLater(new Runnable() {
+
+					@Override
+					public void run() {
+						RefreshTables.apply(o);
+					}
+				});
+				Alert alert = new Alert(AlertType.INFORMATION);
+				alert.setTitle("");
+				alert.setContentText("Замовлення успішно додано.");
+				alert.showAndWait();
+				Stage stage = (Stage) orderProductsTable.getScene().getWindow();
+				stage.close();
+			}
 		} catch (NumberFormatException ex) {
 			Alert alert = new Alert(AlertType.INFORMATION);
 			alert.setTitle("");
@@ -284,5 +290,5 @@ public class OrderController implements Initializable {
 	public void selectCustomer() {
 		customerField.setText(customersTable.getSelectionModel().getSelectedItem().getCustomerName());
 	}
-	
+
 }

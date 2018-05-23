@@ -68,17 +68,17 @@ public class DoneWorkId implements Serializable {
 		 if (operation_id == null) {
 		 if (other.operation_id != null)
 		 return false;
-		 } else if (!operation_id.equals(other.operation_id))
+		 } else if (!(operation_id.getOperationId() ==other.operation_id.getOperationId()))
 		 return false;
 		 if (model == null) {
 		 if (other.model != null)
 		 return false;
-		 } else if (!model.equals(other.model))
+		 } else if (!(model.getModel().getModel() == other.model.getModel().getModel()))
 		 return false;
 		if (worker_id == null) {
 			if (other.worker_id != null)
 				return false;
-		} else if (!worker_id.equals(other.worker_id))
+		} else if (!(worker_id.getWorker_id() == other.worker_id.getWorker_id()))
 			return false;
 		return true;
 	}

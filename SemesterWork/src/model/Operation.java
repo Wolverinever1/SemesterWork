@@ -7,12 +7,16 @@ import java.util.Set;
 
 import javax.persistence.*;
 
+import org.hibernate.annotations.GenericGenerator;
+
 @Entity
 @Table(name = "operation")
 public class Operation implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	@Id
+	@GenericGenerator(strategy = "increment", name = "increment")
+	@GeneratedValue(generator = "increment")
 	@Column(name = "operation_id")
 	private int operationId;
 	@Column(name = "price",precision = 19, scale = 4,columnDefinition="DECIMAL(19,4)")
@@ -46,8 +50,7 @@ public class Operation implements Serializable {
 		// TODO Auto-generated constructor stub
 	}
 
-	public Operation(int operationId, BigDecimal price, BigDecimal time, String name, int grade, Equipment equipment) {
-		this.operationId = operationId;
+	public Operation(BigDecimal price, BigDecimal time, String name, int grade, Equipment equipment) {
 		this.price = price;
 		this.time = time;
 		this.name = name;

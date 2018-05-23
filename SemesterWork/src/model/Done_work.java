@@ -19,7 +19,14 @@ public class Done_work implements Serializable {
 	private static final long serialVersionUID = -4681729637023306383L;
 
 	@Column(name = "count_done")
-	private int countDone;
+	private int count_done;
+
+	public Done_work(int countDone, Order_product o_p, Operation operation, Worker worker) {
+		this.count_done = countDone;
+		primaryKey.setModel(o_p);
+		primaryKey.setOperation_id(operation);
+		primaryKey.setWorker_id(worker);
+	}
 
 	@EmbeddedId
 	private DoneWorkId primaryKey = new DoneWorkId();
@@ -32,7 +39,7 @@ public class Done_work implements Serializable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + countDone;
+		result = prime * result + count_done;
 		result = prime * result + ((primaryKey == null) ? 0 : primaryKey.hashCode());
 		return result;
 	}
@@ -46,7 +53,7 @@ public class Done_work implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		Done_work other = (Done_work) obj;
-		if (countDone != other.countDone)
+		if (count_done != other.count_done)
 			return false;
 		if (primaryKey == null) {
 			if (other.primaryKey != null)
@@ -57,11 +64,11 @@ public class Done_work implements Serializable {
 	}
 
 	public int getCount_done() {
-		return countDone;
+		return count_done;
 	}
 
 	public void setCount_done(int countDone) {
-		this.countDone = countDone;
+		this.count_done = countDone;
 	}
 
 	@Transient

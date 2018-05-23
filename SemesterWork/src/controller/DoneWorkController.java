@@ -18,16 +18,21 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.stage.Stage;
+import javafx.scene.text.Text;
 import javafx.util.Callback;
 import model.Done_work;
+import model.Operation;
+import model.Order_product;
 import model.Pr_op_sequence;
 import model.Worker;
 import model.Workplace;
 import model.dao.DoneWorkDAO;
 import model.dao.OperationDAO;
+import model.dao.OrderProductsDAO;
 import model.dao.ProductOperationsDAO;
 import model.dao.WorkerDAO;
 import model.dao.WorkplaceDAO;
@@ -51,9 +56,20 @@ public class DoneWorkController implements Initializable {
 	TableColumn<Done_work, BigDecimal> columnTime;
 	@FXML
 	TableColumn<Done_work, Integer> columnCount;
-
-	private ObservableList<Done_work> listDoneWork;
+	@FXML
+	TableColumn<Done_work, Integer> order_Id;
+	@FXML
+	TextField countField;
+	@FXML
+	Text dataText;
 	
+	@FXML
+	CheckBox justThisOrder;
+	@FXML
+	CheckBox justActive;
+
+	private ObservableList<Done_work> listAllDoneWork;
+
 	private static String order_id;
 	private static String model;
 
@@ -72,17 +88,39 @@ public class DoneWorkController implements Initializable {
 	public static void setModel(String model) {
 		DoneWorkController.model = model;
 	}
+	
+	public void groupBy() {
+		if(justThisOrder.isSelected()&&(!justActive.isSelected())){
+			ObservableList<Done_work> justThisOrder = FXCollections.observableArrayList(DoneWorkDAO.selectJustThisOrder(new Integer(order_id)));
+			doneWorkTable.setItems(justThisOrder);
+		}else if((!justThisOrder.isSelected())&&(!justActive.isSelected())) {
+			doneWorkTable.setItems(listAllDoneWork);
+		}else if((!justThisOrder.isSelected())&&justActive.isSelected()) {
+			ObservableList<Done_work> justActive = FXCollections.observableArrayList(DoneWorkDAO.selectActive());
+			doneWorkTable.setItems(justActive);
+		}else if((justThisOrder.isSelected())&&justActive.isSelected()) {
+			List<Done_work> active = DoneWorkDAO.selectActive();
+			List<Done_work> activeThisOrder = new LinkedList<>();
+			for (Done_work d_w : active) {
+				if (d_w.getModel().getModel().getModel() == new Integer(model).intValue() && d_w.getModel().getOrder().getOrder_id() == new Integer(order_id).intValue())
+					activeThisOrder.add(d_w);
+			}
+			ObservableList<Done_work> justThisOrderAndActive = FXCollections.observableArrayList(activeThisOrder);
+			doneWorkTable.setItems(justThisOrderAndActive);
+		}
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		columnWorkerId = new TableColumn<Done_work, Integer>("Код");
+		columnWorkerId = new TableColumn<Done_work, Integer>("Код\nпрацівника");
 		columnLMF = new TableColumn<Done_work, String>("ПІБ");
-		columnOperationNo = new TableColumn<Done_work, Integer>("Код");
+		columnOperationNo = new TableColumn<Done_work, Integer>("Код\nоперації");
 		columnOperationName = new TableColumn<Done_work, String>("Назва операції");
 		columnPrice = new TableColumn<Done_work, BigDecimal>("Ціна");
 		columnTime = new TableColumn<Done_work, BigDecimal>("Час");
 		columnCount = new TableColumn<Done_work, Integer>("Кількість");
+		order_Id = new TableColumn<Done_work, Integer>("№ замовлення");
 
 		columnWorkerId.setCellValueFactory(
 				new Callback<TableColumn.CellDataFeatures<Done_work, Integer>, ObservableValue<Integer>>() {
@@ -135,12 +173,19 @@ public class DoneWorkController implements Initializable {
 					}
 				});
 
-		columnCount.setCellValueFactory(new PropertyValueFactory<>("countDone"));
+		columnCount.setCellValueFactory(new PropertyValueFactory<>("count_done"));
+		order_Id.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Done_work,Integer>, ObservableValue<Integer>>() {
+			
+			@Override
+			public ObservableValue<Integer> call(CellDataFeatures<Done_work, Integer> param) {
+				return new ReadOnlyObjectWrapper<>(param.getValue().getModel().getOrder().getOrder_id());
+			}
+		});
 
-		doneWorkTable.getColumns().addAll(columnWorkerId, columnLMF, columnOperationNo, columnOperationName,
+		doneWorkTable.getColumns().addAll(order_Id, columnWorkerId, columnLMF, columnOperationNo, columnOperationName,
 				columnPrice, columnTime, columnCount);
-		listDoneWork = FXCollections.observableArrayList(DoneWorkDAO.selectAll());
-		doneWorkTable.setItems(listDoneWork);
+		listAllDoneWork = FXCollections.observableArrayList(DoneWorkDAO.selectAll());
+		doneWorkTable.setItems(listAllDoneWork);
 
 	}
 
@@ -152,11 +197,11 @@ public class DoneWorkController implements Initializable {
 		private int grade;
 		private BigDecimal time;
 
-		public OperationWrapper(Object[] o) {
+		public OperationWrapper(Done_work d_w) {
 
-			order_id = new Integer(o[0].toString());
-			model = new Integer(o[1].toString());
-			operation_id = new Integer(o[2].toString());
+			order_id = d_w.getModel().getOrder().getOrder_id();
+			model = d_w.getModel().getModel().getModel();
+			operation_id = d_w.getOperation_id().getOperationId();
 			List<Object[]> oInfo = OperationDAO.Info(operation_id);
 			equipment_id = new Integer(oInfo.get(0)[0].toString());
 			grade = new Integer(oInfo.get(0)[1].toString());
@@ -233,8 +278,8 @@ public class DoneWorkController implements Initializable {
 			for (Workplace wp : WorkplaceDAO.selectEquipmentId(worker)) {
 				equipment.add(wp.getEquipment_id().getId());
 			}
-			busyTime =WorkerDAO.getBusyTime(active, id);
-			System.out.println(id+ " = >>" + busyTime);
+			busyTime = WorkerDAO.getBusyTime(active, id);
+			System.out.println(id + " = >>" + busyTime);
 		}
 
 		public Set<Integer> getEquipment() {
@@ -273,11 +318,12 @@ public class DoneWorkController implements Initializable {
 
 	@FXML
 	public void divideOperations() {
-		List<Object[]> dw = DoneWorkDAO.FindActive();
+		List<Done_work> dw = DoneWorkDAO.selectActive();
+//		List<Object[]> dw = DoneWorkDAO.FindActive();
 		BigDecimal tact = ProductOperationsDAO.ModelTime(model);
 		ProductOperationsDAO.selectOperationSequense(model);
 		List<OperationWrapper> active = new LinkedList<>();
-		for (Object[] o : dw) {
+		for (Done_work o : dw) {
 			OperationWrapper wrapper = new OperationWrapper(o);
 			active.add(wrapper);
 		}
@@ -289,10 +335,10 @@ public class DoneWorkController implements Initializable {
 		}
 		List<OperationWrapper> activeThisModel = new LinkedList<>();
 		for (OperationWrapper wrapper : active) {
-			if (wrapper.model == new Integer(model).intValue()&&wrapper.order_id == new Integer(order_id).intValue())
+			if (wrapper.model == new Integer(model).intValue() && wrapper.order_id == new Integer(order_id).intValue())
 				activeThisModel.add(wrapper);
 		}
-		 allOperations.removeAll(activeThisModel);
+		allOperations.removeAll(activeThisModel);
 		List<WorkerWrapper> workers = new LinkedList<>();
 		List<Worker> workersInfo = WorkerDAO.selectAllOrderByGrade();
 		for (Worker w : workersInfo) {
@@ -304,14 +350,19 @@ public class DoneWorkController implements Initializable {
 			for (int j = 0; j < workers.size(); j++) {
 				if (workers.get(j).getGrade() >= allOperations.get(i).getGrade()
 						&& workers.get(j).getEquipment().contains(allOperations.get(i).getEquipment_id())) {
-					opTime.subtract(tact.subtract(workers.get(j).getBusyTime()));
-					// save done_work
-					System.out.println("Add work: order" + order_id + " -model- " + model
-							+ allOperations.get(i).getOperation_id() + " -worker- " + workers.get(j).id + " -op_grade- "
-							+ allOperations.get(i).grade + " -w_grade- " + workers.get(j).grade);
-					if (workers.get(j).getBusyTime().equals(new BigDecimal(0.0))) {
-						workers.remove(j);
-						j--;
+					Order_product o_p = OrderProductsDAO.select(new Integer(order_id), new Integer(model));
+					Worker worker = WorkerDAO.getWorker(workers.get(j).id);
+					Operation operation = OperationDAO.getOperation(allOperations.get(i).operation_id);
+					Done_work done = new Done_work(0, o_p, operation, worker);
+					if (!listAllDoneWork.contains(done)) {
+						DoneWorkDAO.Add(done);
+						listAllDoneWork.add(done);
+						doneWorkTable.refresh();
+						opTime.subtract(tact.subtract(workers.get(j).getBusyTime()));
+						if (workers.get(j).getBusyTime().equals(new BigDecimal(0.0))) {
+							workers.remove(j);
+							j--;
+						}
 					}
 				}
 			}
@@ -319,11 +370,9 @@ public class DoneWorkController implements Initializable {
 				Alert alert = new Alert(AlertType.INFORMATION);
 				alert.setTitle("");
 				alert.setHeaderText("Увага!");
-				alert.setContentText("Необхідно додати працівнику робоче місце з номером обладнання "
+				alert.setContentText("Для продовженняб необхідно додати працівнику робоче місце з номером обладнання "
 						+ allOperations.get(i).equipment_id + " і розрядом не менше " + allOperations.get(i).grade);
 				alert.showAndWait();
-				Stage stage = (Stage) doneWorkTable.getScene().getWindow();
-				stage.close();
 				return;
 			} else if (workers.isEmpty()) {
 				break;
@@ -339,4 +388,34 @@ public class DoneWorkController implements Initializable {
 		}
 	}
 
+	@FXML
+	public void updateCount() {
+		try {
+			Integer count = new Integer(countField.getText());
+			int orderCount = OrderProductsDAO.getCount(new Integer(order_id), new Integer(model));
+			BigDecimal doneCount = DoneWorkDAO.doneCount(new Integer(model), new Integer(order_id),
+					doneWorkTable.getSelectionModel().getSelectedItem().getCount_done());
+			if (doneCount.add(new BigDecimal(count)).compareTo(new BigDecimal(orderCount))==1) {
+				Alert alert = new Alert(AlertType.INFORMATION);
+				alert.setTitle("");
+				alert.setHeaderText("Увага!");
+				alert.setContentText("Значення перебільшує максимально можливе.");
+				alert.showAndWait();
+			} else {
+				doneWorkTable.getSelectionModel().getSelectedItem().setCount_done(count);
+				DoneWorkDAO.Update(doneWorkTable.getSelectionModel().getSelectedItem());
+				doneWorkTable.refresh();
+			}
+		} catch (NumberFormatException e) {
+
+		}
+	}
+
+	@FXML
+	public void doneWorkOnMouseClicked() {
+		Done_work d_w = doneWorkTable.getSelectionModel().getSelectedItem();
+		dataText.setText(d_w.getOperation_id().getName());
+		countField.setText(new Integer(d_w.getCount_done()).toString());
+
+	}
 }

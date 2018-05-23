@@ -96,7 +96,8 @@ public class ProductController implements Initializable {
 			productModelTextField.setText(new Integer(product.getModel()).toString());
 			productModelTextField.setEditable(false);
 			productNameTextField.setText(product.getName());
-			List<Pr_op_sequence> operations = ProductOperationsDAO.selectOperationSequense(new Integer(product.getModel()).toString());
+			List<Pr_op_sequence> operations = ProductOperationsDAO
+					.selectOperationSequense(new Integer(product.getModel()).toString());
 			for (int i = 0; i < operations.size(); i++)
 				listSelected.add(operations.get(i).getOperation());
 			if (operations.isEmpty()) {
@@ -176,6 +177,21 @@ public class ProductController implements Initializable {
 					}
 				}
 			});
+		} else {
+			ObservableList<Operation> selectedOp = selectedOperationsTable.getSelectionModel().getSelectedItems();
+			listAll.removeAll(selectedOp);
+			listAll.addAll(selectedOp);
+			listSelected.removeAll(selectedOp);
+			allOperationsTable.refresh();
+			selectedOperationsTable.refresh();
+			if (addSelected.isDisable()) {
+				addSelected.setDisable(false);
+				addAll.setDisable(false);
+			}
+			if (listSelected.size() == 0) {
+				removeSelected.setDisable(true);
+				removeAll.setDisable(true);
+			}
 		}
 	}
 
@@ -204,6 +220,17 @@ public class ProductController implements Initializable {
 					allOperationsTable.getSelectionModel().select(0);
 				}
 			});
+		} else {
+			listAll.removeAll(listSelected);
+			listAll.addAll(listSelected);
+			listSelected.removeAll(listSelected);
+			allOperationsTable.refresh();
+			selectedOperationsTable.refresh();
+			addSelected.setDisable(false);
+			addAll.setDisable(false);
+			removeSelected.setDisable(true);
+			removeAll.setDisable(true);
+			allOperationsTable.getSelectionModel().select(0);
 		}
 	}
 
@@ -212,20 +239,24 @@ public class ProductController implements Initializable {
 		try {
 			boolean needRefresh = false;
 			if (product == null) {
+				
 				needRefresh = true;
 				product = new Product();
 				Integer model = new Integer(productModelTextField.getText().trim());
+				
 				if (model.intValue() < 0)
 					throw new NumberFormatException();
 				product.setModel(model);
 				product.setName(productNameTextField.getText().trim());
+				
 				ProductDAO.Add(product);
 			} else {
 				product.setName(productNameTextField.getText().trim());
 				ProductDAO.Update(product);
 			}
 			LinkedList<Pr_op_sequence> existOperations = new LinkedList<>();
-			for (Pr_op_sequence operation : ProductOperationsDAO.selectOperationSequense(new Integer(product.getModel()).toString())) {
+			for (Pr_op_sequence operation : ProductOperationsDAO
+					.selectOperationSequense(new Integer(product.getModel()).toString())) {
 				existOperations.add(operation);
 			}
 			List<Pr_op_sequence> operations = new LinkedList<>();
@@ -241,8 +272,8 @@ public class ProductController implements Initializable {
 				}
 				operations.add(op);
 			}
-			for(Pr_op_sequence op:existOperations) {
-				if(!operations.contains(op)) {
+			for (Pr_op_sequence op : existOperations) {
+				if (!operations.contains(op)) {
 					ProductOperationsDAO.Delete(op);
 				}
 			}

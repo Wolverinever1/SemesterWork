@@ -19,6 +19,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
@@ -386,6 +387,11 @@ public class SampleController implements Initializable {
 		operationPriceColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
 		operationTimeColumn.setCellValueFactory(new PropertyValueFactory<>("time"));
 		operationGradeColumn.setCellValueFactory(new PropertyValueFactory<>("grade"));
+		operationNameColumn.prefWidthProperty()
+				.bind(operationsTableView.widthProperty()
+						.subtract(operationIdColumn.getWidth() + operationEquipmentIdColumn.getWidth()
+								+ operationPriceColumn.getWidth() + operationTimeColumn.getWidth()
+								+ operationGradeColumn.getWidth()));
 
 		operationsTableView.getColumns().addAll(operationIdColumn, operationNameColumn, operationEquipmentIdColumn,
 				operationPriceColumn, operationTimeColumn, operationGradeColumn);
@@ -463,6 +469,7 @@ public class SampleController implements Initializable {
 
 					@Override
 					public ObservableValue<Integer> call(CellDataFeatures<Workplace, Integer> param) {
+						
 						return new ReadOnlyObjectWrapper<>(param.getValue().getMachineNo());
 					}
 				});
@@ -554,31 +561,62 @@ public class SampleController implements Initializable {
 
 	@FXML
 	public void insertButtonAction() {
-		String fName = fNameField.getText().trim();
-		String mName = mNameField.getText().trim();
-		String lName = lNameField.getText().trim();
-		int grade = gradeChoiseBox.getValue();
-		Worker w = new Worker(fName, mName, lName, grade);
-		WorkerDAO.Add(w);
-		list.add(w);
+		try {
+			String fName = fNameField.getText().trim();
+			String mName = mNameField.getText().trim();
+			String lName = lNameField.getText().trim();
+			if (fName.equals("") || mName.equals("") || lName.equals(""))
+				throw new NullPointerException();
+			int grade = gradeChoiseBox.getValue();
+			Worker w = new Worker(fName, mName, lName, grade);
+			WorkerDAO.Add(w);
+			list.add(w);
+		} catch (NullPointerException ex) {
+			Alert alert = new Alert(AlertType.INFORMATION);
+			alert.setTitle("");
+			alert.setHeaderText("Увага!");
+			alert.setContentText("Будь ласка, перевірте введені дані. Ви заповнили не всі поля. Працівника не додано.");
+			alert.showAndWait();
+		}
 	}
 
 	@FXML
 	public void updateButtonAction() {
-		int index = workers.getSelectionModel().getSelectedIndex();
-		list.get(index).setfName(fNameField.getText().trim());
-		list.get(index).setmName(mNameField.getText().trim());
-		list.get(index).setlName(lNameField.getText().trim());
-		list.get(index).setGrade(gradeChoiseBox.getValue());
-		WorkerDAO.Update(list.get(index));
-		workers.refresh();
+		try {
+			int index = workers.getSelectionModel().getSelectedIndex();
+			String fName = fNameField.getText().trim();
+			String mName = mNameField.getText().trim();
+			String lName = lNameField.getText().trim();
+			if (fName.equals("") || mName.equals("") || lName.equals(""))
+				throw new NullPointerException();
+			list.get(index).setfName(fName);
+			list.get(index).setmName(mName);
+			list.get(index).setlName(lName);
+			list.get(index).setGrade(gradeChoiseBox.getValue());
+			WorkerDAO.Update(list.get(index));
+			workers.refresh();
+		} catch (ArrayIndexOutOfBoundsException e) {
+			Alert alert = new Alert(AlertType.INFORMATION);
+			alert.setTitle("");
+			alert.setHeaderText("Увага!");
+			alert.setContentText("Працівника не обрано!");
+			alert.showAndWait();////////////////
+		} catch (NullPointerException ex) {
+			Alert alert = new Alert(AlertType.INFORMATION);
+			alert.setTitle("");
+			alert.setHeaderText("Увага!");
+			alert.setContentText("Будь ласка, перевірте введені дані. Ви заповнили не всі поля. Дані не оновлено.");///////////////////////////////
+			alert.showAndWait();
+		}
 	}
 
 	@FXML
 	public void deleteButtonAction() {
-		WorkerDAO.Delete(workers.getSelectionModel().getSelectedItem());
-		list.remove(workers.getSelectionModel().getSelectedItem());
-		workers.refresh();
+		if (workers.getSelectionModel().getSelectedIndex() != -1) {
+			WorkerDAO.Delete(workers.getSelectionModel().getSelectedItem());
+			list.remove(workers.getSelectionModel().getSelectedItem());
+			workers.refresh();
+		}
 	}
 
 	@FXML
@@ -609,9 +647,11 @@ public class SampleController implements Initializable {
 
 	@FXML
 	public void WorkPlaceDeleteOnWorker() {
-		WorkplaceDAO.Delete(workerWPlacesTableView.getSelectionModel().getSelectedItem());
-		listWorkPlaces.remove(workerWPlacesTableView.getSelectionModel().getSelectedItem());
-		workerWPlacesTableView.refresh();
+		if (workerWPlacesTableView.getSelectionModel().getSelectedIndex() != -1) {
+			WorkplaceDAO.Delete(workerWPlacesTableView.getSelectionModel().getSelectedItem());
+			listWorkPlaces.remove(workerWPlacesTableView.getSelectionModel().getSelectedItem());
+			workerWPlacesTableView.refresh();
+		}
 	}
 
 	@FXML
@@ -650,35 +690,81 @@ public class SampleController implements Initializable {
 
 	@FXML
 	public void insertCustomerButtonAction() {
-		Customer c = new Customer(0, customerNameTextArea.getText().trim(),
-				customerPhoneTextArea.getText().trim().toCharArray(), customerAddressTextArea.getText().trim());
-		CustomerDAO.Add(c);
-		listCustomers.add(c);
-		customersTableView.refresh();
+		String name = customerNameTextArea.getText().trim();
+		String address = customerAddressTextArea.getText().trim();
+		// CHECK PHONE NUMBER
+		if (name.equals("") || address.equals("")) {
+			Alert alert = new Alert(AlertType.INFORMATION);
+			alert.setTitle("");
+			alert.setHeaderText("Увага!");
+			alert.setContentText("Будь ласка, перевірте введені дані. Ви заповнили не всі поля. Дані не додано.");
+			alert.showAndWait();
+		} else {
+			Customer c = new Customer(name, customerPhoneTextArea.getText().trim().toCharArray(), address);
+			CustomerDAO.Add(c);
+			listCustomers.add(c);
+			customersTableView.refresh();
+		}
 	}
 
 	@FXML
 	public void updateCustomerButtonAction() {
-		int index = customersTableView.getSelectionModel().getSelectedIndex();
-		listCustomers.get(index).setAddress(customerAddressTextArea.getText().trim());
-		listCustomers.get(index).setCustomerName(customerNameTextArea.getText().trim());
-		listCustomers.get(index).setPhone(customerPhoneTextArea.getText().trim().toCharArray());
-		CustomerDAO.Update(listCustomers.get(index));
-		customersTableView.refresh();
+		try {
+			int index = customersTableView.getSelectionModel().getSelectedIndex();
+			String address = customerAddressTextArea.getText().trim();
+			String name = customerNameTextArea.getText().trim();
+			// CHECK PHONE
+			if (address.equals("") || name.equals(""))
+				throw new NullPointerException();
+			listCustomers.get(index).setAddress(address);
+			listCustomers.get(index).setCustomerName(name);
+			listCustomers.get(index).setPhone(customerPhoneTextArea.getText().trim().toCharArray());
+			CustomerDAO.Update(listCustomers.get(index));
+			customersTableView.refresh();
+		} catch (ArrayIndexOutOfBoundsException ex) {
+			Alert alert = new Alert(AlertType.INFORMATION);
+			alert.setTitle("");
+			alert.setHeaderText("Увага!");
+			alert.setContentText("Замовника не обрано!");
+			alert.showAndWait();
+		} catch (NullPointerException e) {
+			Alert alert = new Alert(AlertType.INFORMATION);
+			alert.setTitle("");
+			alert.setHeaderText("Увага!");
+			alert.setContentText("Будь ласка, перевірте введені дані. Ви заповнили не всі поля. Замовника не додано.");
+			alert.showAndWait();
+		}
 	}
 
 	@FXML
 	public void deleteCustomerButtonAction() {
-		CustomerDAO.Delete(customersTableView.getSelectionModel().getSelectedItem());
-		listCustomers.remove(customersTableView.getSelectionModel().getSelectedItem());
-		customersTableView.refresh();
+		if (customersTableView.getSelectionModel().getSelectedIndex() != -1) {
+			Alert alert = new Alert(AlertType.NONE);
+			alert.setTitle("");
+			alert.setContentText(
+					"При видаленні замовника зі списку, дані про замовлення, а отже і дані про виконану роботу будуть видалені. Ви дійсно бажаєте продовжити?");
+			ButtonType yes = new ButtonType("Так");
+			ButtonType no = new ButtonType("Ні");
+			alert.getButtonTypes().add(yes);
+			alert.getButtonTypes().add(no);
+			alert.showAndWait().ifPresent(response -> {
+				if (response == yes) {
+					CustomerDAO.Delete(customersTableView.getSelectionModel().getSelectedItem());
+					listCustomers.remove(customersTableView.getSelectionModel().getSelectedItem());
+					customersTableView.refresh();
+				}
+			});
+			currentOrdersCheckBox();
+		}
 	}
 
 	@FXML
 	public void deleteOperationButtonAction() {
-		OperationDAO.Delete(operationsTableView.getSelectionModel().getSelectedItem());
-		listOperations.remove(operationsTableView.getSelectionModel().getSelectedItem());
-		operationsTableView.refresh();
+		if (operationsTableView.getSelectionModel().getSelectedIndex() != -1) {
+			OperationDAO.Delete(operationsTableView.getSelectionModel().getSelectedItem());
+			listOperations.remove(operationsTableView.getSelectionModel().getSelectedItem());
+			operationsTableView.refresh();
+		}
 	}
 
 	@FXML
@@ -690,6 +776,8 @@ public class SampleController implements Initializable {
 			listOperations.get(index).setEquipment(EquipmentDAO.getEquipment(operationEquipmentChoiseBox.getValue()));
 			listOperations.get(index).setGrade(operationGradeChoiseBox.getValue());
 			listOperations.get(index).setName(operationNameTextField.getText().trim());
+			OperationDAO.Update(listOperations.get(index));
+			operationsTableView.refresh();
 		} catch (ArithmeticException e) {
 			Alert alert = new Alert(AlertType.INFORMATION);
 			alert.setTitle("");
@@ -706,21 +794,43 @@ public class SampleController implements Initializable {
 			Alert alert = new Alert(AlertType.INFORMATION);
 			alert.setTitle("");
 			alert.setHeaderText("Увага!");
-			alert.setContentText("Будь ласка, перевірте введені дані. Операцію не додано.");
+			alert.setContentText("Будь ласка, перевірте введені дані. Операцію не оновлено.");
 			alert.showAndWait();
-			return;
+		} catch (ArrayIndexOutOfBoundsException ex) {
+			Alert alert = new Alert(AlertType.INFORMATION);
+			alert.setTitle("");
+			alert.setHeaderText("Увага!");
+			alert.setContentText("Операцію не обрано!");
+			alert.showAndWait();
 		}
-		OperationDAO.Update(listOperations.get(index));
-		operationsTableView.refresh();
 	}
 
 	@FXML
 	public void insertOperationButtonAction() {
-		Equipment e = EquipmentDAO.getEquipment(operationEquipmentChoiseBox.getValue());
-		Operation o = new Operation(0, new BigDecimal(operationPriceTextField.getText().trim()),
-				new BigDecimal(operationTimeTextField.getText().trim()), operationNameTextField.getText().trim(),
-				operationGradeChoiseBox.getValue(), e);
-		OperationDAO.Add(o);
+		try {
+			String opName = operationNameTextField.getText().trim();
+			if (opName.equals(""))
+				throw new NullPointerException();
+			Equipment e = EquipmentDAO.getEquipment(operationEquipmentChoiseBox.getValue());
+			Operation o = new Operation(new BigDecimal(operationPriceTextField.getText().trim()),
+					new BigDecimal(operationTimeTextField.getText().trim()), opName, operationGradeChoiseBox.getValue(),
+					e);
+			OperationDAO.Add(o);
+			listOperations.add(o);
+			operationsTableView.refresh();
+		} catch (NumberFormatException e1) {
+			Alert alert = new Alert(AlertType.INFORMATION);
+			alert.setTitle("");
+			alert.setHeaderText("Увага!");
+			alert.setContentText("Будь ласка, перевірте введені дані. Операцію не додано.");
+			alert.showAndWait();
+		} catch (NullPointerException e) {
+			Alert alert = new Alert(AlertType.INFORMATION);
+			alert.setTitle("");
+			alert.setHeaderText("Увага!");
+			alert.setContentText("Будь ласка, перевірте введені дані. Ви заповнили не всі поля. Операцію не додано.");
+			alert.showAndWait();
+		}
 	}
 
 	@FXML
@@ -754,37 +864,49 @@ public class SampleController implements Initializable {
 			alert.setHeaderText("Увага!");
 			alert.setContentText("Будь ласка, перевірте введені дані. Дані про обладнання не оновлено.");
 			alert.showAndWait();
-		}
+		}catch (ArrayIndexOutOfBoundsException e) {
+			Alert alert = new Alert(AlertType.INFORMATION);
+			alert.setTitle("");
+			alert.setHeaderText("Увага!");
+			alert.setContentText("Обладнання не обрано!");
+			alert.showAndWait();
+		} 
 	}
 
 	@FXML
 	public void deleteEquipment() {
-		EquipmentDAO.Delete(equipmentTableView.getSelectionModel().getSelectedItem());
-		listEquipment.remove(equipmentTableView.getSelectionModel().getSelectedItem());
-		equipmentTableView.refresh();
+		if (equipmentTableView.getSelectionModel().getSelectedIndex() != -1) {
+			EquipmentDAO.Delete(equipmentTableView.getSelectionModel().getSelectedItem());
+			listEquipment.remove(equipmentTableView.getSelectionModel().getSelectedItem());
+			equipmentTableView.refresh();
+		}
 	}
 
 	@FXML
 	public void deleteWorkPlace() {
-		WorkplaceDAO.Delete(workplacesTableView.getSelectionModel().getSelectedItem());
-		listWorkPlaces.remove(workplacesTableView.getSelectionModel().getSelectedItem());
-		workplacesTableView.refresh();
+		if (workplacesTableView.getSelectionModel().getSelectedIndex() != -1) {
+			WorkplaceDAO.Delete(workplacesTableView.getSelectionModel().getSelectedItem());
+			listWorkPlaces.remove(workplacesTableView.getSelectionModel().getSelectedItem());
+			workplacesTableView.refresh();
+		}
 	}
 
 	@FXML
 	public void updateWorkPlace() {
-		int index = workplacesTableView.getSelectionModel().getSelectedIndex();
 		try {
-			listWorkPlaces.get(index).setMachineNo(new Integer(workplaceMachineNoTextField.getText().trim()));
-			listWorkPlaces.get(index).setEquipment_id(workplaceEquipmentChoiceBox.getValue());
-			listWorkPlaces.get(index).setWorker_id(workplaceWorkerChoiceBox.getValue());
-			WorkplaceDAO.Update(listWorkPlaces.get(index));
+			workplacesTableView.getSelectionModel().getSelectedItem()
+					.setMachineNo(new Integer(workplaceMachineNoTextField.getText().trim()));
+			workplacesTableView.getSelectionModel().getSelectedItem()
+					.setEquipment_id(workplaceEquipmentChoiceBox.getValue());
+			workplacesTableView.getSelectionModel().getSelectedItem().setWorker_id(workplaceWorkerChoiceBox.getValue());
+			System.out.println("update");
+			WorkplaceDAO.Update(workplacesTableView.getSelectionModel().getSelectedItem());
 			workplacesTableView.refresh();
 		} catch (NumberFormatException e) {
 			Alert alert = new Alert(AlertType.INFORMATION);
 			alert.setTitle("");
 			alert.setHeaderText("Увага!");
-			alert.setContentText("Будь ласка, перевірте введені дані. Дані про обладнання не оновлено.");
+			alert.setContentText("Будь ласка, перевірте введені дані. Дані про робоче місце не оновлено.");
 			alert.showAndWait();
 		}
 	}
@@ -793,8 +915,8 @@ public class SampleController implements Initializable {
 	public void addWorkPlace() {
 		try {
 			Integer machineNo = new Integer(workplaceMachineNoTextField.getText().trim());
-			for(Workplace w:listWorkPlaces) {
-				if(w.getMachineNo() == machineNo.intValue()) {
+			for (Workplace w : listWorkPlaces) {
+				if (w.getMachineNo() == machineNo.intValue()) {
 					Alert alert = new Alert(AlertType.ERROR);
 					alert.setTitle("");
 					alert.setHeaderText("Увага!");
@@ -803,7 +925,8 @@ public class SampleController implements Initializable {
 					return;
 				}
 			}
-			Workplace wp = new Workplace(workplaceWorkerChoiceBox.getValue(), workplaceEquipmentChoiceBox.getValue(), machineNo	);
+			Workplace wp = new Workplace(workplaceWorkerChoiceBox.getValue(), workplaceEquipmentChoiceBox.getValue(),
+					machineNo);
 			WorkplaceDAO.Add(wp);
 			listWorkPlaces.add(wp);
 			workplacesTableView.refresh();
@@ -811,7 +934,7 @@ public class SampleController implements Initializable {
 			Alert alert = new Alert(AlertType.INFORMATION);
 			alert.setTitle("");
 			alert.setHeaderText("Увага!");
-			alert.setContentText("Будь ласка, перевірте введені дані. Дані про обладнання не оновлено.");
+			alert.setContentText("Будь ласка, перевірте введені дані. Дані про робоче місце не додано.");
 			alert.showAndWait();
 		}
 	}
@@ -819,7 +942,6 @@ public class SampleController implements Initializable {
 	@FXML
 	public void addProduct() {
 		try {
-			// ProductSaver.setProduct();
 			ProductSaver.setUpdate(false);
 			Stage stage = new Stage();
 			AnchorPane root = (AnchorPane) FXMLLoader.load(getClass().getResource("/view/product.fxml"));
@@ -856,9 +978,11 @@ public class SampleController implements Initializable {
 
 	@FXML
 	public void deleteProduct() {
-		ProductDAO.Delete(productTableView.getSelectionModel().getSelectedItem());
-		listProduct.remove(productTableView.getSelectionModel().getSelectedItem());
-		productTableView.refresh();
+		if (productTableView.getSelectionModel().getSelectedIndex() != -1) {
+			ProductDAO.Delete(productTableView.getSelectionModel().getSelectedItem());
+			listProduct.remove(productTableView.getSelectionModel().getSelectedItem());
+			productTableView.refresh();
+		}
 	}
 
 	@FXML
@@ -949,10 +1073,7 @@ public class SampleController implements Initializable {
 			AnchorPane root = (AnchorPane) FXMLLoader.load(getClass().getResource("/view/Done_work.fxml"));
 			Scene scene = new Scene(root, 800, 580);
 			scene.getStylesheets().add(getClass().getResource("/view/application.css").toExternalForm());
-			// OrderController.setRefreshTables(x -> RefreshTables(x));
 			TreeItem<OrdersCustomerProducts> item = OrdersTreeView.getSelectionModel().getSelectedItem();
-			System.out.println(
-					"=>" + item.getParent().getValue().getOrderId() + "<=>" + item.getValue().getModel() + "<=");
 			DoneWorkController.setOrder_id(item.getParent().getValue().getOrderId());
 			DoneWorkController.setModel(item.getValue().getModel());
 			stage.initModality(Modality.APPLICATION_MODAL);

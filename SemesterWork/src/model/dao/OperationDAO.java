@@ -46,5 +46,14 @@ public class OperationDAO {
 		session.getTransaction().commit();
 		return done;
 	}
+	
+	public static Operation getOperation(int id){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		session.beginTransaction();
+		Operation operation = (Operation) session.createQuery("from Operation where operationId = "+id).list().get(0);
+		session.getTransaction().commit();
+		return operation;
+	}
+	
 
 }

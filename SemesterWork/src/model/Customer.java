@@ -4,10 +4,14 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.*;
+
+import org.hibernate.annotations.GenericGenerator;
 @Entity
 @Table(name="customer")
 public class Customer {
 	@Id
+	@GenericGenerator(strategy = "increment", name = "increment")
+	@GeneratedValue(generator = "increment")
 	@Column(name="customer_id")
 	private int customerId;
 	@Column(name="customer_name")
@@ -17,12 +21,11 @@ public class Customer {
 	@Column(name="address")
 	private String address;
 	
-	@OneToMany
-    @JoinColumn(name="order_id")
+	@OneToMany(cascade = {CascadeType.ALL})
+    @JoinColumn(name="customer_id")
 	private Set<Order> orders = new HashSet<>();
 
-	public Customer(int customerId, String customerName, char[] phone, String address) {
-		this.customerId = customerId;
+	public Customer(String customerName, char[] phone, String address) {
 		this.customerName = customerName;
 		this.phone = phone;
 		this.address = address;
