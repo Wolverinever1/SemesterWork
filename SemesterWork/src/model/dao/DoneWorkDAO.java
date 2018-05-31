@@ -84,7 +84,7 @@ public class DoneWorkDAO {
 		@SuppressWarnings("unchecked")
 		List<Done_work> active = session.createQuery(
 				"FROM Done_work d_w GROUP BY d_w.primaryKey.operation_id.operationId, d_w.primaryKey.model.primaryKey.order.order_id, "
-						+ "d_w.primaryKey.model.primaryKey.model.model HAVING SUM(d_w.count_done)<(SELECT o_p.count FROM Order_product o_p WHERE"
+						+ "d_w.primaryKey.model.primaryKey.model.model,d_w.primaryKey.worker_id.worker_id  HAVING SUM(d_w.count_done)<(SELECT o_p.count FROM Order_product o_p WHERE"
 						+ " o_p.primaryKey.order.order_id = d_w.primaryKey.model.primaryKey.order.order_id AND o_p.primaryKey.model.model = d_w.primaryKey.model.primaryKey.model.model)")
 				.list();
 		session.getTransaction().commit();

@@ -40,7 +40,8 @@ public class AccountDAO {
 					.list().get(0);
 			session.getTransaction().commit();
 			return w;
-		} catch (IndexOutOfBoundsException e) {
+		} catch (Exception e) {
+			session.getTransaction().rollback();
 			return null;
 		}
 	}
@@ -56,7 +57,7 @@ public class AccountDAO {
 			Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 			session.beginTransaction();
 			result = (boolean) session
-					.createQuery("select password = \'" + passwordEncrypted + "\' from Account where login =" + login)
+					.createQuery("select password = \'" + passwordEncrypted + "\' from Account where login = '" + login+"'")
 					.list().get(0);
 			session.getTransaction().commit();
 		} catch (NoSuchAlgorithmException e1) {
@@ -76,7 +77,7 @@ public class AccountDAO {
 			Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 			session.beginTransaction();
 			session.createNativeQuery(
-					"update accounts set password = \'" + passwordEncrypted + "\' where login =" + login + ";")
+					"update accounts set password = \'" + passwordEncrypted + "\' where login ='" + login + "';")
 					.executeUpdate();
 			session.getTransaction().commit();
 		} catch (NoSuchAlgorithmException e) {

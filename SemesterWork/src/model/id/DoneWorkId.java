@@ -50,9 +50,8 @@ public class DoneWorkId implements Serializable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		 result = prime * result + ((operation_id == null) ? 0 :
-		 operation_id.hashCode());
-		 result = prime * result + ((model == null) ? 0 : model.hashCode());
+		result = prime * result + ((operation_id == null) ? 0 : operation_id.hashCode());
+		result = prime * result + ((model == null) ? 0 : model.hashCode());
 		result = prime * result + ((worker_id == null) ? 0 : worker_id.hashCode());
 		return result;
 	}
@@ -66,17 +65,17 @@ public class DoneWorkId implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		DoneWorkId other = (DoneWorkId) obj;
-		 if (operation_id == null) {
-		 if (other.operation_id != null)
-		 return false;
-		 } else if (!(operation_id.getOperationId() ==other.operation_id.getOperationId()))
-		 return false;
-		 if (model == null) {
-		 if (other.model != null)
-		 return false;
-		 } else if (!(model.getModel().getModel() == other.model.getModel().getModel()))
-		 return false;
-		if (worker_id == null) {
+		if (operation_id == null) {
+			if (other.operation_id != null)
+				return false;
+		} else if (!(operation_id.getOperationId() == other.operation_id.getOperationId()))
+			return false;
+		if (model == null) {
+			if (other.model != null)
+				return false;
+		} else if (!(model.getModel().getModel() == other.model.getModel().getModel())) {
+			return false;
+		} else if (worker_id == null) {
 			if (other.worker_id != null)
 				return false;
 		} else if (!(worker_id.getWorker_id() == other.worker_id.getWorker_id()))
@@ -85,8 +84,7 @@ public class DoneWorkId implements Serializable {
 	}
 
 	@ManyToOne
-	@JoinColumns({ @JoinColumn(name = "model"),
-			@JoinColumn(name = "order_id") })
+	@JoinColumns({ @JoinColumn(name = "model"), @JoinColumn(name = "order_id") })
 	public Order_product getModel() {
 		return model;
 	}

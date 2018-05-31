@@ -602,7 +602,8 @@ public class SampleController implements Initializable {
 			String lName = lNameField.getText().trim();
 			String eMailNew = email.getText().trim();
 			int grade = gradeChoiseBox.getValue();
-			Pattern pattern = Pattern.compile("^([a-z0-9_-])*[a-z0-9_-]+@[a-z0-9_-]+(\\.[a-z0-9_-]+)*\\.[a-z]{2,6}$");
+			Pattern pattern = Pattern
+					.compile("^([a-z0-9_-]+\\.)*[a-z0-9_-]+@[a-z0-9_-]+(\\.[a-z0-9_-]+)*\\.[a-z]{2,6}$");
 			Matcher matcher = pattern.matcher(eMailNew);
 			if (fName.equals("") || mName.equals("") || lName.equals("") || !matcher.find())
 				throw new NullPointerException();
@@ -955,9 +956,12 @@ public class SampleController implements Initializable {
 			if (opName.equals(""))
 				throw new NullPointerException();
 			Equipment e = operationEquipmentChoiseBox.getValue();
-			Operation o = new Operation(new BigDecimal(operationPriceTextField.getText().trim()),
-					new BigDecimal(operationTimeTextField.getText().trim()), opName, operationGradeChoiseBox.getValue(),
-					e);
+			BigDecimal zero = new BigDecimal(0);
+			BigDecimal price = new BigDecimal(operationPriceTextField.getText().trim());
+			BigDecimal time = new BigDecimal(operationTimeTextField.getText().trim());
+			if (price.compareTo(zero) == -1 || time.compareTo(zero) == -1)
+				throw new NumberFormatException();
+			Operation o = new Operation(price, time, opName, operationGradeChoiseBox.getValue(), e);
 			OperationDAO.Add(o);
 			listOperations.add(o);
 			operationsTableView.refresh();
@@ -979,8 +983,10 @@ public class SampleController implements Initializable {
 	@FXML
 	public void addEquipment() {
 		try {
-			Equipment e = new Equipment(new Integer(equipmentIdTextField.getText().trim()),
-					equipmentDescriptionTextField.getText().trim());
+			int num = new Integer(equipmentIdTextField.getText().trim());
+			if (num < 0)
+				throw new NumberFormatException(); // ia tyt minav
+			Equipment e = new Equipment(num, equipmentDescriptionTextField.getText().trim());
 			for (Equipment eq : listEquipment) {
 				if (eq.getId() == e.getId()) {
 					Alert alert = new Alert(AlertType.INFORMATION);
@@ -1009,7 +1015,10 @@ public class SampleController implements Initializable {
 	public void updateEquipment() {
 		try {
 			int index = equipmentTableView.getSelectionModel().getSelectedIndex();
-			listEquipment.get(index).setId(new Integer(equipmentIdTextField.getText().trim()));
+			int num = new Integer(equipmentIdTextField.getText().trim());
+			if (num < 0)
+				throw new NumberFormatException(); // ia tyt minav
+			listEquipment.get(index).setId(num);
 			listEquipment.get(index).setDescription(equipmentDescriptionTextField.getText().trim());
 			EquipmentDAO.Update(listEquipment.get(index));
 			equipmentTableView.refresh();
@@ -1092,13 +1101,12 @@ public class SampleController implements Initializable {
 				alert.setContentText("Ви не можете змінити тип обладнання робочого місця.");
 				alert.showAndWait();
 			} else {
-				workplacesTableView.getSelectionModel().getSelectedItem()
-						.setMachineNo(new Integer(workplaceMachineNoTextField.getText().trim()));
+				// workplacesTableView.getSelectionModel().getSelectedItem()
+				// .setMachineNo(new Integer(workplaceMachineNoTextField.getText().trim()));
 				workplaceEquipmentChoiceBox
 						.setValue(workplacesTableView.getSelectionModel().getSelectedItem().getEquipment_id());
 				workplacesTableView.getSelectionModel().getSelectedItem()
 						.setWorker_id(workplaceWorkerChoiceBox.getValue());
-				System.out.println("update");
 				WorkplaceDAO.Update(workplacesTableView.getSelectionModel().getSelectedItem());
 				workplacesTableView.refresh();
 			}
@@ -1115,6 +1123,8 @@ public class SampleController implements Initializable {
 	public void addWorkPlace() {
 		try {
 			Integer machineNo = new Integer(workplaceMachineNoTextField.getText().trim());
+			if (machineNo < 0)
+				throw new NumberFormatException(); // ya tyt cod pisav
 			for (Workplace w : listAllWorkPlaces) {
 				if (w.getMachineNo() == machineNo.intValue()) {
 					Alert alert = new Alert(AlertType.ERROR);
@@ -1129,6 +1139,7 @@ public class SampleController implements Initializable {
 					machineNo);
 			WorkplaceDAO.Add(wp);
 			listAllWorkPlaces.add(wp);
+			workplacesTableView.setItems(listAllWorkPlaces);
 			workplacesTableView.refresh();
 		} catch (NumberFormatException e) {
 			Alert alert = new Alert(AlertType.INFORMATION);
@@ -1161,8 +1172,8 @@ public class SampleController implements Initializable {
 	@FXML
 	public void updateProduct() {
 		try {
-			productTableView.getSelectionModel().getSelectedItem()
-					.setModel(new Integer(productModelTextField.getText().trim()));
+			// productTableView.getSelectionModel().getSelectedItem()
+			// .setModel(new Integer(productModelTextField.getText().trim()));
 			productTableView.getSelectionModel().getSelectedItem().setName(productNameTextField.getText().trim());
 			ProductDAO.Update(productTableView.getSelectionModel().getSelectedItem());
 			productTableView.refresh();
@@ -1191,7 +1202,15 @@ public class SampleController implements Initializable {
 			alert.getButtonTypes().add(no);
 			alert.showAndWait().ifPresent(response -> {
 				if (response == yes) {
-					ProductSaver.getId().remove(productTableView.getSelectionModel().getSelectedItem().getModel());
+					ProductSaver.getId().removeIf(new Predicate<Integer>() {
+
+						@Override
+						public boolean test(Integer t) {
+							return t.intValue() == productTableView.getSelectionModel().getSelectedItem().getModel()
+									? true
+									: false;
+						}
+					});
 					ProductDAO.Delete(productTableView.getSelectionModel().getSelectedItem());
 					listProduct.remove(productTableView.getSelectionModel().getSelectedItem());
 					productTableView.refresh();

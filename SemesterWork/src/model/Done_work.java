@@ -53,8 +53,8 @@ public class Done_work implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		Done_work other = (Done_work) obj;
-		if (count_done != other.count_done)
-			return false;
+//		if (count_done != other.count_done)
+//			return false;
 		if (primaryKey == null) {
 			if (other.primaryKey != null)
 				return false;

@@ -16,6 +16,14 @@ public class ChangePasswordController {
 	
 	@FXML
 	public void ChangeData(){
+		if(passwordField.getText().equals("")||repeatePasswordField.getText().equals("")||oldPasswordField.getText().equals("")) {
+			Alert alert = new Alert(AlertType.INFORMATION);
+			alert.setTitle("");
+			alert.setHeaderText("Увага!");
+			alert.setContentText("Заповніть всі поля.");
+			alert.showAndWait();
+			return;
+		}
 		String login = (String)passwordField.getScene().getUserData();
 		boolean check = AccountDAO.checkPassword(oldPasswordField.getText(), login);
 		if(check) {

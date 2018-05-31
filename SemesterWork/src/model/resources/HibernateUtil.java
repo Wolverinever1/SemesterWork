@@ -9,13 +9,8 @@ public class HibernateUtil {
 
 	public static SessionFactory getSessionFactory() {
 		if (sessionFactory == null) {
-			try {
 				sessionFactory = new Configuration().configure("/model/resources/hibernate.cfg.xml")
 						.buildSessionFactory();
-			} catch (Throwable ex) {
-				System.out.println("Session factory creation failed");
-				ex.printStackTrace();
-			}
 		}
 		return sessionFactory;
 	}

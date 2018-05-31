@@ -1,6 +1,8 @@
 package controller;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -336,7 +338,8 @@ public class DoneWorkController implements Initializable {
 	public void divideOperations() {
 		List<Done_work> dw = DoneWorkDAO.selectActive();
 		// List<Object[]> dw = DoneWorkDAO.FindActive();
-		BigDecimal tact = ProductOperationsDAO.ModelTime(model).divide(new BigDecimal(WorkerDAO.getWorkerCount()));
+		MathContext mc = new MathContext(4, RoundingMode.HALF_UP);
+		BigDecimal tact = ProductOperationsDAO.ModelTime(model).divide(new BigDecimal(WorkerDAO.getWorkerCount()),mc);
 		System.out.println("TACT " + tact);
 		ProductOperationsDAO.selectOperationSequense(model);
 		List<OperationWrapper> active = new LinkedList<>();

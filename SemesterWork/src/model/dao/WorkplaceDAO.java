@@ -20,7 +20,6 @@ public class WorkplaceDAO {
 	public static void Update(Workplace w) {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		session.beginTransaction();
-		System.out.println("must update");
 		session.update(w);
 		session.getTransaction().commit();
 	}

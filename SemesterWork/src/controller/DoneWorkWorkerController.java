@@ -134,6 +134,14 @@ public class DoneWorkWorkerController implements Initializable {
 				int orderCount = OrderProductsDAO.getCount(new Integer(order_id), new Integer(model));
 				BigDecimal doneCount = DoneWorkDAO.doneCount(new Integer(model), new Integer(order_id),
 						doneWorkTable.getSelectionModel().getSelectedItem().getCount_done());
+				if(count<0) {
+					Alert alert = new Alert(AlertType.INFORMATION);
+					alert.setTitle("");
+					alert.setHeaderText("Увага!");
+					alert.setContentText("Значення не може бути меншим 0.");
+					alert.showAndWait();
+					return;
+				}
 				if (doneCount.add(new BigDecimal(count)).compareTo(new BigDecimal(orderCount)) == 1) {
 					Alert alert = new Alert(AlertType.INFORMATION);
 					alert.setTitle("");
@@ -145,6 +153,13 @@ public class DoneWorkWorkerController implements Initializable {
 					DoneWorkDAO.Update(doneWorkTable.getSelectionModel().getSelectedItem());
 					doneWorkTable.refresh();
 				}
+			}else {
+				Alert alert = new Alert(AlertType.INFORMATION);
+				alert.setTitle("");
+				alert.setHeaderText("Увага!");
+				alert.setContentText(
+						"Спочатку оберіть запис.");
+				alert.showAndWait();
 			}
 		} catch (NumberFormatException e) {
 			Alert alert = new Alert(AlertType.INFORMATION);
