@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping">
+<hibernate-mapping package="model">
+	<class name="Order" table="order">
+		<id name="orderId" column="order_id">
+			<generator class="native" />
+		</id>
+		<property name="orderDate" column="order_date"/>
+		<many-to-one name="customer" class="model.Customer" column="customer_id"/>
+		<set name="products" table="order_product">
+			<key column="order_id" />
+			<one-to-many class="model.Order_product" />
+		</set>
+	</class>
+</hibernate-mapping>

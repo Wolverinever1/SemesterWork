@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="580.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ProductController">
+   <children>
+      <TextField fx:id="productNameTextField" layoutX="194.0" layoutY="26.0" prefHeight="25.0" prefWidth="456.0" />
+      <Label layoutX="154.0" layoutY="30.0" text="Назва" />
+      <Label layoutX="14.0" layoutY="30.0" text="Модель" />
+      <TextField fx:id="productModelTextField" layoutX="65.0" layoutY="26.0" prefHeight="25.0" prefWidth="83.0" />
+      <TableView fx:id="selectedOperationsTable" layoutX="290.0" layoutY="71.0" minWidth="-Infinity" prefHeight="502.0" prefWidth="332.0" AnchorPane.bottomAnchor="6.0" AnchorPane.rightAnchor="11.0">
+        <columns>
+          <TableColumn maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="-1.0" text="C1" />
+        </columns>
+      </TableView>
+      <TableView fx:id="allOperationsTable" layoutX="11.0" layoutY="71.0" prefHeight="502.0" prefWidth="332.0" AnchorPane.bottomAnchor="6.0" AnchorPane.leftAnchor="11.0">
+         <columns>
+            <TableColumn fx:id="operationsAllColumn" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="-1.0" text="C1" />
+         </columns>
+      </TableView>
+      <Button fx:id="addSelected" layoutX="359.0" layoutY="225.0" mnemonicParsing="false" onAction="#addSelectedAction" prefHeight="25.0" prefWidth="83.0" text="&gt;" />
+      <Button fx:id="addAll" layoutX="359.0" layoutY="260.0" mnemonicParsing="false" onAction="#addAllAction" prefHeight="25.0" prefWidth="83.0" text="&gt;&gt;" />
+      <Button fx:id="removeSelected" layoutX="359.0" layoutY="295.0" mnemonicParsing="false" onAction="#removeSelectedAction" prefWidth="83.0" text="&lt;" />
+      <Button fx:id="removeAll" layoutX="359.0" layoutY="330.0" mnemonicParsing="false" onAction="#removeAllAction" prefWidth="83.0" text="&lt;&lt;" />
+      <Button layoutX="660.0" layoutY="26.0" mnemonicParsing="false" onAction="#createProduct" prefHeight="25.0" prefWidth="126.0" text="Зберегти" />
+   </children>
+</AnchorPane>

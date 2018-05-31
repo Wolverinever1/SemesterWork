@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC  
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"  
+        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+	<session-factory>
+		<property name="connection.driver_class">com.mysql.jdbc.Driver</property>
+		<property name="connection.url">jdbc:mysql://127.0.0.1:3306/worker_db</property>
+		<property name="connection.username">root</property>
+		<property name="connection.password">1</property>
+		<property name="connection.characterEncoding">UTF-8</property>
+		<property name="dialect">org.hibernate.dialect.MySQLDialect</property>
+		<property name="connection.pool_size">1</property>
+		<property name="current_session_context_class">thread</property>
+		<property name="cache.provider_class">org.hibernate.cache.NoCacheProvider</property>
+		<property name="show_sql">true</property>
+
+		<mapping package="model" />
+		<mapping class="model.Customer" />
+		<mapping class="model.Order" />
+		<mapping class="model.Order_product" />
+		<mapping class="model.Product" />
+		<mapping class="model.Pr_op_sequence" />
+		<mapping class="model.Operation" />
+		<mapping class="model.Equipment" />
+		<mapping class="model.Worker" />
+		<mapping class="model.Workplace" />
+		<mapping class="model.Done_work" />
+		<mapping class="model.Account" />
+		<!-- <mapping resource="resources/worker_operation.hbm.xml"></mapping> -->
+	</session-factory>
+</hibernate-configuration>

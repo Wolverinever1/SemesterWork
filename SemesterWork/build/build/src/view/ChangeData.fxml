@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="300.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ChangePasswordController">
+   <children>
+      <Label layoutX="53.0" layoutY="107.0" prefHeight="17.0" prefWidth="98.0" text="Новий пароль" AnchorPane.leftAnchor="53.0" AnchorPane.topAnchor="107.0" />
+      <PasswordField fx:id="oldPasswordField" layoutX="161.0" layoutY="66.0" prefHeight="25.0" prefWidth="187.0" AnchorPane.leftAnchor="161.0" AnchorPane.topAnchor="66.0" />
+      <PasswordField fx:id="passwordField" layoutX="161.0" layoutY="103.0" prefHeight="25.0" prefWidth="187.0" AnchorPane.leftAnchor="161.0" AnchorPane.topAnchor="103.0" />
+      <PasswordField fx:id="repeatePasswordField" layoutX="161.0" layoutY="141.0" prefHeight="25.0" prefWidth="187.0" AnchorPane.leftAnchor="161.0" AnchorPane.topAnchor="141.0" />
+      <Label layoutX="53.0" layoutY="145.0" text="Повторіть пароль" AnchorPane.leftAnchor="53.0" AnchorPane.topAnchor="145.0" />
+      <Button layoutX="53.0" layoutY="193.0" mnemonicParsing="false" onAction="#ChangeData" prefHeight="42.0" prefWidth="293.0" text="Змінити" AnchorPane.leftAnchor="53.0" AnchorPane.rightAnchor="54.0" AnchorPane.topAnchor="193.0" />
+      <Label layoutX="53.0" layoutY="70.0" text="Старий пароль " AnchorPane.leftAnchor="53.0" AnchorPane.topAnchor="70.0" />
+   </children>
+</AnchorPane>
