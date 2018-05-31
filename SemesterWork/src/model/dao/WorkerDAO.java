@@ -37,16 +37,7 @@ public class WorkerDAO {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		session.beginTransaction();
 		@SuppressWarnings("unchecked")
-		List<Workplace> wp = session
-				.createQuery("from Workplace where primaryKey.worker_id.worker_id=" + w.getWorker_id()).list();// from
-																												// Workplace
-																												// wp
-																												// left
-																												// join
-																												// wp.worker
-																												// worker
-																												// where
-																												// worker.worker_id
+		List<Workplace> wp = session.createQuery("from Workplace where worker_id.worker_id=" + w.getWorker_id()).list();
 		session.getTransaction().commit();
 		return wp;
 	}
@@ -82,17 +73,26 @@ public class WorkerDAO {
 		session.beginTransaction();
 		String select = "select sum(o.`time`) from `operation` o where o.`operation_id` IN\r\n"
 				+ "(select d_w.`operation_id` from `done_work` d_w where (";
-		select+="(`d_w`.`operation_id` ="+operations.get(0).getOperation_id()+" AND \r\n"
-				+ "`d_w`.`model` = "+operations.get(0).getModel()+" AND `d_w`.`order_id` = "+operations.get(0).getOrder_id()+")";
-		for(int i=1;i<operations.size();i++) {
-			select+="OR (`d_w`.`operation_id` ="+operations.get(i).getOperation_id()+" AND \r\n"
-					+ "`d_w`.`model` = "+operations.get(i).getModel()+" AND `d_w`.`order_id` = "+operations.get(i).getOrder_id()+")";
+		select += "(`d_w`.`operation_id` =" + operations.get(0).getOperation_id() + " AND \r\n" + "`d_w`.`model` = "
+				+ operations.get(0).getModel() + " AND `d_w`.`order_id` = " + operations.get(0).getOrder_id() + ")";
+		for (int i = 1; i < operations.size(); i++) {
+			select += "OR (`d_w`.`operation_id` =" + operations.get(i).getOperation_id() + " AND \r\n"
+					+ "`d_w`.`model` = " + operations.get(i).getModel() + " AND `d_w`.`order_id` = "
+					+ operations.get(i).getOrder_id() + ")";
 		}
-		select+=") and d_w.`worker_id` = "+worker_id+");";
+		select += ") and d_w.`worker_id` = " + worker_id + ");";
 		Object o = session.createNativeQuery(select).list().get(0);
 		BigDecimal result = new BigDecimal(o == null ? "0.0" : o.toString());
 		session.getTransaction().commit();
 		return result;
 	}
 
+	public static int getWorkerCount() {
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		session.beginTransaction();
+		Integer w = new Integer( session.createQuery("select count(*) from Worker").list().get(0).toString());
+		session.getTransaction().commit();
+		return w;
+	}
+	
 }

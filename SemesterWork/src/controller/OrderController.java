@@ -152,6 +152,9 @@ public class OrderController implements Initializable {
 						return new ReadOnlyObjectWrapper<Button>(param.getValue().getButton());
 					}
 				});
+		addProductColumn.setPrefWidth(50);
+		productIdColumn.setPrefWidth(50);
+		productNameColumn.prefWidthProperty().bind(productsTable.widthProperty().subtract(100));
 		List<Wrapper> wrappers = new LinkedList<>();
 		List<Product> products = ProductDAO.selectAll();
 		for (Product p : products) {
@@ -219,6 +222,8 @@ public class OrderController implements Initializable {
 		customerNameColumn = new TableColumn<Customer, String>("Ім'я замовника");
 		customerIdColumn.setCellValueFactory(new PropertyValueFactory<>("customerId"));
 		customerNameColumn.setCellValueFactory(new PropertyValueFactory<>("customerName"));
+		customerIdColumn.setPrefWidth(60);
+		customerNameColumn.prefWidthProperty().bind(customersTable.widthProperty().subtract(60));
 		customersTable.getColumns().addAll(customerIdColumn, customerNameColumn);
 		listCustomers = FXCollections.observableArrayList(CustomerDAO.selectAll());
 		customersTable.setItems(listCustomers);
@@ -247,6 +252,13 @@ public class OrderController implements Initializable {
 				alert.setContentText("Ви не додали товари до замовлення.");
 				alert.showAndWait();
 			} else {
+				if(date.getValue().isAfter(LocalDate.now())) {
+					Alert alert = new Alert(AlertType.INFORMATION);
+					alert.setTitle("");
+					alert.setContentText("Ви вибрали дату із майбутнього");
+					alert.showAndWait();
+					return;
+				}
 				Order o = new Order();
 				o.setCustomer(customersTable.getSelectionModel().getSelectedItem());
 				o.setOrderDate(Date.valueOf(date.getValue()));

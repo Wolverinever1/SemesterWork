@@ -62,9 +62,7 @@ public class DoneWorkController implements Initializable {
 	TextField countField;
 	@FXML
 	Text dataText;
-	
-	@FXML
-	CheckBox justThisOrder;
+
 	@FXML
 	CheckBox justActive;
 
@@ -88,25 +86,39 @@ public class DoneWorkController implements Initializable {
 	public static void setModel(String model) {
 		DoneWorkController.model = model;
 	}
-	
+
 	public void groupBy() {
-		if(justThisOrder.isSelected()&&(!justActive.isSelected())){
-			ObservableList<Done_work> justThisOrder = FXCollections.observableArrayList(DoneWorkDAO.selectJustThisOrder(new Integer(order_id)));
-			doneWorkTable.setItems(justThisOrder);
-		}else if((!justThisOrder.isSelected())&&(!justActive.isSelected())) {
-			doneWorkTable.setItems(listAllDoneWork);
-		}else if((!justThisOrder.isSelected())&&justActive.isSelected()) {
-			ObservableList<Done_work> justActive = FXCollections.observableArrayList(DoneWorkDAO.selectActive());
-			doneWorkTable.setItems(justActive);
-		}else if((justThisOrder.isSelected())&&justActive.isSelected()) {
+//		if (justThisOrder.isSelected() && (!justActive.isSelected())) {
+//			ObservableList<Done_work> justThisOrder = FXCollections
+//					.observableArrayList(DoneWorkDAO.selectJustThisOrder(new Integer(order_id)));
+//			doneWorkTable.setItems(justThisOrder);
+//		} else if ((!justThisOrder.isSelected()) && (!justActive.isSelected())) {
+//			doneWorkTable.setItems(listAllDoneWork);
+//		} else if ((!justThisOrder.isSelected()) && justActive.isSelected()) {
+//			
+//		} else if ((justThisOrder.isSelected()) && justActive.isSelected()) {
+//			List<Done_work> active = DoneWorkDAO.selectActive();
+//			List<Done_work> activeThisOrder = new LinkedList<>();
+//			for (Done_work d_w : active) {
+//				if (d_w.getModel().getModel().getModel() == new Integer(model).intValue()
+//						&& d_w.getModel().getOrder().getOrder_id() == new Integer(order_id).intValue())
+//					activeThisOrder.add(d_w);
+//			}
+//			ObservableList<Done_work> justThisOrderAndActive = FXCollections.observableArrayList(activeThisOrder);
+//			doneWorkTable.setItems(justThisOrderAndActive);
+//		}
+		if(justActive.isSelected()) {
 			List<Done_work> active = DoneWorkDAO.selectActive();
 			List<Done_work> activeThisOrder = new LinkedList<>();
 			for (Done_work d_w : active) {
-				if (d_w.getModel().getModel().getModel() == new Integer(model).intValue() && d_w.getModel().getOrder().getOrder_id() == new Integer(order_id).intValue())
+				if (d_w.getModel().getModel().getModel() == new Integer(model).intValue()
+						&& d_w.getModel().getOrder().getOrder_id() == new Integer(order_id).intValue())
 					activeThisOrder.add(d_w);
 			}
 			ObservableList<Done_work> justThisOrderAndActive = FXCollections.observableArrayList(activeThisOrder);
 			doneWorkTable.setItems(justThisOrderAndActive);
+		}else {
+			doneWorkTable.setItems(listAllDoneWork);
 		}
 	}
 
@@ -174,17 +186,18 @@ public class DoneWorkController implements Initializable {
 				});
 
 		columnCount.setCellValueFactory(new PropertyValueFactory<>("count_done"));
-		order_Id.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Done_work,Integer>, ObservableValue<Integer>>() {
-			
-			@Override
-			public ObservableValue<Integer> call(CellDataFeatures<Done_work, Integer> param) {
-				return new ReadOnlyObjectWrapper<>(param.getValue().getModel().getOrder().getOrder_id());
-			}
-		});
+		order_Id.setCellValueFactory(
+				new Callback<TableColumn.CellDataFeatures<Done_work, Integer>, ObservableValue<Integer>>() {
+
+					@Override
+					public ObservableValue<Integer> call(CellDataFeatures<Done_work, Integer> param) {
+						return new ReadOnlyObjectWrapper<>(param.getValue().getModel().getOrder().getOrder_id());
+					}
+				});
 
 		doneWorkTable.getColumns().addAll(order_Id, columnWorkerId, columnLMF, columnOperationNo, columnOperationName,
 				columnPrice, columnTime, columnCount);
-		listAllDoneWork = FXCollections.observableArrayList(DoneWorkDAO.selectAll());
+		listAllDoneWork = FXCollections.observableArrayList(DoneWorkDAO.selectAll(order_id, model));
 		doneWorkTable.setItems(listAllDoneWork);
 
 	}
@@ -278,7 +291,10 @@ public class DoneWorkController implements Initializable {
 			for (Workplace wp : WorkplaceDAO.selectEquipmentId(worker)) {
 				equipment.add(wp.getEquipment_id().getId());
 			}
-			busyTime = WorkerDAO.getBusyTime(active, id);
+			if (active.size() > 0)
+				busyTime = WorkerDAO.getBusyTime(active, id);
+			else
+				busyTime = new BigDecimal("0.0");
 			System.out.println(id + " = >>" + busyTime);
 		}
 
@@ -319,8 +335,9 @@ public class DoneWorkController implements Initializable {
 	@FXML
 	public void divideOperations() {
 		List<Done_work> dw = DoneWorkDAO.selectActive();
-//		List<Object[]> dw = DoneWorkDAO.FindActive();
-		BigDecimal tact = ProductOperationsDAO.ModelTime(model);
+		// List<Object[]> dw = DoneWorkDAO.FindActive();
+		BigDecimal tact = ProductOperationsDAO.ModelTime(model).divide(new BigDecimal(WorkerDAO.getWorkerCount()));
+		System.out.println("TACT " + tact);
 		ProductOperationsDAO.selectOperationSequense(model);
 		List<OperationWrapper> active = new LinkedList<>();
 		for (Done_work o : dw) {
@@ -370,7 +387,7 @@ public class DoneWorkController implements Initializable {
 				Alert alert = new Alert(AlertType.INFORMATION);
 				alert.setTitle("");
 				alert.setHeaderText("Увага!");
-				alert.setContentText("Для продовженняб необхідно додати працівнику робоче місце з номером обладнання "
+				alert.setContentText("Для продовження необхідно додати працівнику робоче місце з номером обладнання "
 						+ allOperations.get(i).equipment_id + " і розрядом не менше " + allOperations.get(i).grade);
 				alert.showAndWait();
 				return;
@@ -395,7 +412,7 @@ public class DoneWorkController implements Initializable {
 			int orderCount = OrderProductsDAO.getCount(new Integer(order_id), new Integer(model));
 			BigDecimal doneCount = DoneWorkDAO.doneCount(new Integer(model), new Integer(order_id),
 					doneWorkTable.getSelectionModel().getSelectedItem().getCount_done());
-			if (doneCount.add(new BigDecimal(count)).compareTo(new BigDecimal(orderCount))==1) {
+			if (doneCount.add(new BigDecimal(count)).compareTo(new BigDecimal(orderCount)) == 1) {
 				Alert alert = new Alert(AlertType.INFORMATION);
 				alert.setTitle("");
 				alert.setHeaderText("Увага!");
@@ -407,15 +424,21 @@ public class DoneWorkController implements Initializable {
 				doneWorkTable.refresh();
 			}
 		} catch (NumberFormatException e) {
-
+			Alert alert = new Alert(AlertType.INFORMATION);
+			alert.setTitle("");
+			alert.setHeaderText("Увага!");
+			alert.setContentText("Перевірте введені дані. Значення не може бути меншим, або дорівнювати 0, або містити символи, відмінні від цифр.");
+			alert.showAndWait();
 		}
 	}
 
 	@FXML
 	public void doneWorkOnMouseClicked() {
 		Done_work d_w = doneWorkTable.getSelectionModel().getSelectedItem();
-		dataText.setText(d_w.getOperation_id().getName());
-		countField.setText(new Integer(d_w.getCount_done()).toString());
+		if (d_w != null) {
+			dataText.setText(d_w.getOperation_id().getName() + " - " +d_w.getWorker_id().getLName()+" " +d_w.getWorker_id().getFName()+" "+d_w.getWorker_id().getMName());
+			countField.setText(new Integer(d_w.getCount_done()).toString());
+		}
 
 	}
 }

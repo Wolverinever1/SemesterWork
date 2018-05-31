@@ -59,7 +59,7 @@ public class OrderProductId implements Serializable {
 		this.order = order;
 	}
 	
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne(cascade = CascadeType.REMOVE)
 	@JoinColumn(name="model")
 	public Product getModel() {
 		return model;

@@ -20,6 +20,8 @@ public class Pr_op_sequence implements Serializable {
 	private ProducOperationtId primaryKey = new ProducOperationtId();
 	private int number;
 
+	
+	
 	public Pr_op_sequence() {
 		// TODO Auto-generated constructor stub
 	}

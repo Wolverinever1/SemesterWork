@@ -17,7 +17,7 @@ public class Customer {
 	@Column(name="customer_name")
 	private String customerName;
 	@Column(name="phone")
-	private char[] phone;
+	private String phone;
 	@Column(name="address")
 	private String address;
 	
@@ -25,7 +25,7 @@ public class Customer {
     @JoinColumn(name="customer_id")
 	private Set<Order> orders = new HashSet<>();
 
-	public Customer(String customerName, char[] phone, String address) {
+	public Customer(String customerName, String phone, String address) {
 		this.customerName = customerName;
 		this.phone = phone;
 		this.address = address;
@@ -47,11 +47,11 @@ public class Customer {
 		this.customerName = customerName;
 	}
 
-	public char[] getPhone() {
+	public String getPhone() {
 		return phone;
 	}
 
-	public void setPhone(char[] phone) {
+	public void setPhone(String phone) {
 		this.phone = phone;
 	}
 

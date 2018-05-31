@@ -12,23 +12,33 @@ import model.id.WorkplaceId;
     @AssociationOverride(name = "primaryKey.machineNo",
         joinColumns = @JoinColumn(name = "machineNo")),
     @AssociationOverride(name = "primaryKey.equipment_id",
-        joinColumns = @JoinColumn(name = "Equipment_id")),
-    @AssociationOverride(name = "primaryKey.worker_id",
-    joinColumns = @JoinColumn(name = "worker_id")),
+        joinColumns = @JoinColumn(name = "Equipment_id"))
    })
 
 public class Workplace implements Serializable {
 	private static final long serialVersionUID = -6425106669200558622L;
+	@EmbeddedId
+	private WorkplaceId primaryKey = new WorkplaceId();
+	private Worker worker_id;
+	
+	@ManyToOne
+	@JoinColumn(name = "worker_id")
+	public Worker getWorker_id() {
+		return worker_id;
+	}
 
+	public void setWorker_id(Worker worker_id) {
+		this.worker_id = worker_id;
+	}
+
+	
 	public Workplace(Worker w, Equipment e, int machineNo) {
 		this.primaryKey = new WorkplaceId();
 		this.primaryKey.setEquipment_id(e);
 		this.primaryKey.setMachineNo(machineNo);
-		this.primaryKey.setWorker_id(w);
+		worker_id = w;
 	}
 
-	@EmbeddedId
-	private WorkplaceId primaryKey = new WorkplaceId();
 	
 	public Workplace() {
 	}
@@ -48,14 +58,14 @@ public class Workplace implements Serializable {
 		return getPrimaryKey().getEquipment_id();
 	}
 
-	@Transient
-	public Worker getWorker_id() {
-		return getPrimaryKey().getWorker_id();
-	}
-	
-	public void setWorker_id(Worker equipment) {
-		getPrimaryKey().setWorker_id(equipment);
-	}
+//	@Transient
+//	public Worker getWorker_id() {
+//		return getPrimaryKey().getWorker_id();
+//	}
+//	
+//	public void setWorker_id(Worker equipment) {
+//		getPrimaryKey().setWorker_id(equipment);
+//	}
 	
 	@Transient
 	public void setEquipment_id(Equipment equipment) {

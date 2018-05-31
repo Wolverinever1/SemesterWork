@@ -45,7 +45,7 @@ public class WorkplaceDAO {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		session.beginTransaction();
 		@SuppressWarnings("unchecked")
-		List<Workplace> workplaces = session.createQuery("from Workplace where primaryKey.worker_id ="+w.getWorker_id()).list();
+		List<Workplace> workplaces = session.createQuery("from Workplace where worker_id.worker_id ="+w.getWorker_id()).list();
 		session.getTransaction().commit();
 		return workplaces;
 	}

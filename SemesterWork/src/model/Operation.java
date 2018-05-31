@@ -27,12 +27,12 @@ public class Operation implements Serializable {
 	private String name;
 	@Column(name = "op_grade")
 	private int grade;
-	@OneToMany
-	@JoinColumn(name = "operation_id")
+	@OneToMany(cascade = CascadeType.ALL,mappedBy="primaryKey.operation_id")
+//    @JoinColumn(name="operation_id")
 	private Set<Done_work> doneWork = new HashSet<>();
 
-	@OneToMany
-	@JoinColumn(name = "operation_id")
+//	@OneToMany
+//		@JoinColumn(name = "operation_id")
 	public Set<Done_work> getDoneWork() {
 		return doneWork;
 	}
@@ -112,7 +112,7 @@ public class Operation implements Serializable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((doneWork == null) ? 0 : doneWork.hashCode());
+//		result = prime * result + ((doneWork == null) ? 0 : doneWork.hashCode());
 		result = prime * result + ((equipment == null) ? 0 : equipment.hashCode());
 		result = prime * result + grade;
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
@@ -131,10 +131,11 @@ public class Operation implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		Operation other = (Operation) obj;
-//		if (doneWork == null) {
-//			if (other.doneWork != null)
-//				return false;
-//		} else if (!doneWork.equals(other.doneWork))
+		if (doneWork == null) {
+			if (other.doneWork != null)
+				return false;
+		} else 
+//			if (!doneWork.equals(other.doneWork))
 //			return false;
 		if (equipment == null) {
 			if (other.equipment != null)

@@ -8,14 +8,13 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
 import model.Equipment;
-import model.Worker;
 
 @Embeddable
 public class WorkplaceId implements Serializable{
 	
 	private static final long serialVersionUID = -7547386438633365107L;
 	private Equipment equipment_id;
-	private Worker worker_id;
+	
 	@Id
 	private int machineNo;
 	
@@ -66,15 +65,4 @@ public class WorkplaceId implements Serializable{
 			return false;
 		return true;
 	}
-
-	@ManyToOne
-	public Worker getWorker_id() {
-		return worker_id;
-	}
-
-	public void setWorker_id(Worker worker_id) {
-		this.worker_id = worker_id;
-	}
-
-
 }

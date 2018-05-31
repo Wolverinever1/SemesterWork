@@ -57,4 +57,21 @@ public class OrderDAO {
 		session.delete(o);
 		session.getTransaction().commit();
 	}
+	
+	@SuppressWarnings("unchecked")
+	public static List<Order> SelectAll() {
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		session.beginTransaction();
+		List<Order> result = (List<Order>)session.createQuery("from Order order by order_id desc").list();
+		session.getTransaction().commit();
+		return result;
+	}
+	
+	public static Order getOrder(int id) {
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		session.beginTransaction();
+		Order w = (Order) session.createQuery("from Order where order_id=" + id).list().get(0);
+		session.getTransaction().commit();
+		return w;
+	}
 }

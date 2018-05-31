@@ -95,6 +95,7 @@ public class ProductController implements Initializable {
 		if (product != null) {
 			productModelTextField.setText(new Integer(product.getModel()).toString());
 			productModelTextField.setEditable(false);
+			productNameTextField.setEditable(false);
 			productNameTextField.setText(product.getName());
 			List<Pr_op_sequence> operations = ProductOperationsDAO
 					.selectOperationSequense(new Integer(product.getModel()).toString());
@@ -239,17 +240,24 @@ public class ProductController implements Initializable {
 		try {
 			boolean needRefresh = false;
 			if (product == null) {
-				
 				needRefresh = true;
-				product = new Product();
 				Integer model = new Integer(productModelTextField.getText().trim());
-				
-				if (model.intValue() < 0)
-					throw new NumberFormatException();
-				product.setModel(model);
-				product.setName(productNameTextField.getText().trim());
-				
-				ProductDAO.Add(product);
+				if (ProductSaver.getId().contains(model)) {
+					Alert alert = new Alert(AlertType.INFORMATION);
+					alert.setTitle("");
+					alert.setHeaderText("Увага!");
+					alert.setContentText("Продукція з таким номером уже існує.");
+					alert.showAndWait();
+					return;
+				} else {
+					product = new Product();
+					if (model.intValue() < 0)
+						throw new NumberFormatException();
+					product.setModel(model);
+					product.setName(productNameTextField.getText().trim());
+					ProductSaver.getId().add(model);
+					ProductDAO.Add(product);
+				}
 			} else {
 				product.setName(productNameTextField.getText().trim());
 				ProductDAO.Update(product);
@@ -283,6 +291,14 @@ public class ProductController implements Initializable {
 					@Override
 					public void run() {
 						RefreshTables.apply(product);
+					}
+				});
+			} else {
+				Platform.runLater(new Runnable() {
+
+					@Override
+					public void run() {
+						RefreshTables.apply(null);
 					}
 				});
 			}

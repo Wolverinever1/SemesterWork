@@ -2,6 +2,7 @@ package model.id;
 
 import java.io.Serializable;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.EmbeddedId;
 import javax.persistence.JoinColumn;
@@ -35,7 +36,7 @@ public class DoneWorkId implements Serializable {
 		this.worker_id = worker_id;
 	}
 
-	@ManyToOne
+	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "operation_id")
 	public Operation getOperation_id() {
 		return operation_id;
